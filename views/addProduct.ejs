@@ -35,8 +35,8 @@
       <option value="">Select Unit</option>
     </select>
 
-    <input id="totalProduct" type="number" class="totalproduct" placeholder="Total Product">
-    <input id="rate" type="number"  id="rate" placeholder="Rate">
+    <input id="totalProduct" type="number" class="totalproduct" placeholder="Total Product" min="1">
+    <input id="rate" type="number"  id="rate" placeholder="Rate" min="1">
     <button onclick="addProduct()" id="add">Add Product</button>
   </div>
 
@@ -44,7 +44,6 @@
   <table>
     <thead>
       <tr>
-        <th>Stock ID</th> 
         <th>Brand Name</th>
         <th>Item Name</th>
         <th>Item Colour</th>
@@ -475,7 +474,6 @@ function renderTable() {
   tempProducts.forEach((p, i) => {
     tbody.innerHTML += `
       <tr>
-        <td>${p.stockID}</td>
         <td>${p.brandName}</td>
         <td>${p.itemName}</td>
         <td>${p.colourName}</td>

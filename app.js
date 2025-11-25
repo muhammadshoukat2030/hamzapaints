@@ -11,6 +11,7 @@ import saleRoutes from "./routes/saleRoutes.js";
 import agentRoutes from "./routes/agentRoutes.js";
 
 
+
 // Initialize dotenv for environment variables
 dotenv.config();
 

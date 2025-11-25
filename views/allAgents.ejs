@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>All Agents</title>
+  <link rel="icon" href="/images/weldon-paints-logo.png" type="image/png">
+  <link rel="stylesheet" href="/stylesheets/allAgents.css">
+</head>
+<body>
+<h1>All Agents</h1>
+
+<!-- Filter Section -->
+<form class="filter-container" method="GET" action="/agents/all">
+  <select name="filter" id="filter" onchange="toggleDateInputs(this.value)">
+    <option value="all" <%= filter === 'all' ? 'selected' : '' %>>All Dates</option>
+    <option value="today" <%= filter === 'today' ? 'selected' : '' %>>Today</option>
+    <option value="yesterday" <%= filter === 'yesterday' ? 'selected' : '' %>>Yesterday</option>
+    <option value="month" <%= filter === 'month' ? 'selected' : '' %>>This Month</option>
+    <option value="lastMonth" <%= filter === 'lastMonth' ? 'selected' : '' %>>Last Month</option>
+    <option value="custom" <%= filter === 'custom' ? 'selected' : '' %>>Custom Range</option>
+  </select>
+
+  <input type="date" name="from" id="from" value="<%= from || '' %>" style="display:none;">
+  <input type="date" name="to" id="to" value="<%= to || '' %>" style="display:none;">
+  <button type="submit" id="apply">Apply</button>
+</form>
+
+
+<!-- Stats Section -->
+<div class="stats">
+  
+  <div class="stat-box">
+    <h3>Total Agents</h3>
+    <p><%= stats.totalAgents %></p>
+  </div>
+
+  <div class="stat-box">
+    <h3>Total % Amount</h3>
+    <p>Rs <%= stats.totalPercentageAmount.toFixed(2) %></p>
+  </div>
+
+  <div class="stat-box">
+    <h3>Total % Given</h3>
+    <p>Rs <%= stats.totalPercentageAmountGiven.toFixed(2) %></p>
+  </div>
+
+  <div class="stat-box">
+    <h3>Total % Left</h3>
+    <p>Rs <%= stats.totalPercentageAmountLeft.toFixed(2) %></p>
+  </div>
+
+</div>
+
+
+
+
+<!-- Agent Table -->
+<table>
+  <thead>
+    <tr>
+      <th>Agent Name</th>
+      <th>Agent Phone</th>
+      <th>Agent CNIC</th>
+      <th>Register Date</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% if (agents.length === 0) { %>
+      <tr><td colspan="5" class="no-data">No agents found for the selected filter.</td></tr>
+    <% } else { %>
+      <% agents.forEach(a => { %>
+        <tr>
+          <td><%= a.name %></td>
+          <td><%= a.phone %></td>
+          <td><%= a.cnic %></td>
+          <td><%= new Date(a.createdAt).toLocaleDateString() %></td>
+          <td>
+            <button onclick="viewAgent('<%= a._id %>')" id="view"><a href="/agents/view-agent/<%= a._id %>" target="_blank" style="text-decoration: none; color: #008767; ">View</a></button>
+            <button onclick="deleteAgent('<%= a._id %>')" id="delete">Delete</button>
+          </td>
+        </tr>
+      <% }) %>
+    <% } %>
+  </tbody>
+</table>
+
+
+
+
+
+<script>
+/* 🔥 Show/Hide Date Inputs */
+function toggleDateInputs(value) {
+  const from = document.getElementById("from");
+  const to = document.getElementById("to");
+
+  if (value === "custom") {
+    from.style.display = "inline-block";
+    to.style.display = "inline-block";
+  } else {
+    from.style.display = "none";
+    to.style.display = "none";
+  }
+}
+
+
+/* 🔥 Delete Agent */
+async function deleteAgent(agentId) {
+  if (!confirm("Are you sure you want to delete this agent?")) return;
+
+  try {
+    const res = await fetch(`/agents/delete-agent/${agentId}`, {
+      method: "DELETE"
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Agent deleted successfully!");
+      location.reload();
+    } else {
+      alert("Failed to delete agent");
+    }
+
+  } catch (err) {
+    alert("Error deleting agent");
+  }
+}
+
+
+
+
+</script>
+
+</body>
+</html>

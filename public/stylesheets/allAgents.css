@@ -110,6 +110,44 @@
    box-shadow: 0 0 5px rgba(255, 77, 77, 0.6);  /* Red glow effect on focus */
   }
 
+
+
+
+
+
+button#view{
+    margin-top: 3px;
+    background-color: #a6e7d8;   /* Light red background color */
+    color: white;               /* Red text color */
+    border: 2px solid #00B087;    /* Red border */
+    padding: 4px;
+    border-radius: 8px;           /* Rounded corners */
+    width: 60px;
+    font-size: 13px;
+    margin-bottom: 5px;          /* Space between inputs */
+    transition: all 0.3s ease;    /* Smooth transition for background, border, and scale */
+    cursor: pointer;
+    color: #008767;
+    }
+
+
+    button#view:hover {
+     background-color: #00B087;
+      border-color: #006f5f;
+      color: white;
+      transform: scale(1.03);
+    }
+   
+
+   button#view:focus {
+      outline: none;
+      box-shadow: 0 0 5px rgba(0, 184, 135, 0.6);
+  }
+
+
+
+
+
     .stats{
       display: flex;
       justify-content: center;
@@ -150,8 +188,6 @@
       font-weight: bold;
       color: #ff4d4d;
     }
-
-  
 
     table{
       width: 100%;
@@ -219,3 +255,6 @@
     color: #888; 
     padding: 8px; 
   }
+
+
+  

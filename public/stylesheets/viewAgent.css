@@ -110,6 +110,70 @@
    box-shadow: 0 0 5px rgba(255, 77, 77, 0.6);  /* Red glow effect on focus */
   }
 
+
+
+
+
+
+button#pay{
+    margin-top: 3px;
+    background-color: #a6e7d8;   /* Light red background color */
+    color: white;               /* Red text color */
+    border: 2px solid #00B087;    /* Red border */
+    padding: 4px;
+    border-radius: 8px;           /* Rounded corners */
+    width: 60px;
+    font-size: 13px;
+    margin-bottom: 5px;          /* Space between inputs */
+    transition: all 0.3s ease;    /* Smooth transition for background, border, and scale */
+    cursor: pointer;
+    color: #008767;
+    }
+
+
+    button#pay:hover {
+     background-color: #00B087;
+      border-color: #006f5f;
+      color: white;
+      transform: scale(1.03);
+    }
+   
+
+   button#pay:focus {
+      outline: none;
+      box-shadow: 0 0 5px rgba(0, 184, 135, 0.6);
+  }
+
+
+
+  /* Submit Button */
+button#submit {
+    margin-top: 3px;
+    background-color: #FFD700;   /* Yellow background */
+    color: #000;                 /* Black text */
+    border: 2px solid #FFC200;   /* Darker yellow border */
+    padding: 4px;
+    border-radius: 8px;
+    width: 70px;
+    font-size: 13px;
+    margin-bottom: 5px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+button#submit:hover {
+    background-color: #FFC200;   /* Slightly darker yellow */
+    border-color: #141108;
+    color: black;                 /* Keep black text on hover */
+    transform: scale(1.03);
+}
+
+button#submit:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.6);
+}
+
+
     .stats{
       display: flex;
       justify-content: center;
@@ -150,8 +214,6 @@
       font-weight: bold;
       color: #ff4d4d;
     }
-
-  
 
     table{
       width: 100%;
@@ -219,3 +281,37 @@
     color: #888; 
     padding: 8px; 
   }
+
+
+  
+   .paid-status{
+     font-weight: bold;
+      color: #ff4d4d;
+   }
+
+
+
+
+
+   input{
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      width: 130px;
+      font-size: 13px;
+      margin-bottom: 10px; /* Space between inputs */
+      transition: border-color 0.3s ease-in-out;
+    }
+     
+
+
+
+    input:focus {
+      border-color: #06a56c;
+      outline: none;
+      box-shadow: 0 0 5px rgba(6, 165, 108, 0.5);
+    }
+
+
+
+    

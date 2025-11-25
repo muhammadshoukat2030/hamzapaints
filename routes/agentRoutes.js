@@ -1,10 +1,305 @@
 import express from 'express';
 const router = express.Router();
+import Agent from '../models/Agent.js';
+import Item from '../models/Item.js';
 
 
 router.get('/add',(req,res)=>{
 res.render('addAgent');
 });
+
+
+router.post("/add", async (req, res) => {
+  try {
+    const { name, phone, cnic } = req.body;
+
+    if (!name || !phone) {
+      return res.json({ success: false, message: "Name and Phone are required." });
+    }
+
+    // Check if phone already exists
+    const exists = await Agent.findOne({ phone });
+    if (exists) {
+      return res.json({ success: false, message: "Agent already registered with this phone number." });
+    }
+
+    // Generate Agent ID
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    const agentID = "AG" + randomNum;
+
+    // Create agent
+    const newAgent = await Agent.create({
+      agentID,
+      name,
+      phone,
+      cnic
+    });
+
+    res.json({
+      success: true,
+      message: "Agent created successfully",
+      agent: newAgent
+    });
+
+  } catch (err) {
+    console.log("Error:", err);
+    res.json({ success: false, message: "Server error occurred." });
+  }
+});
+
+
+
+
+router.get("/all", async (req, res) => {
+  try {
+    let { filter, from, to } = req.query;
+    let query = {};
+    const now = new Date();
+    let start, end;
+
+    // --------------------------
+    // DATE FILTERS
+    // --------------------------
+    if (filter === "today") {
+      start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0,0,0,0);
+      end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23,59,59,999);
+    } else if (filter === "yesterday") {
+      const y = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+      start = new Date(y.getFullYear(), y.getMonth(), y.getDate(), 0,0,0,0);
+      end = new Date(y.getFullYear(), y.getMonth(), y.getDate(), 23,59,59,999);
+    } else if (filter === "month") {
+      start = new Date(now.getFullYear(), now.getMonth(), 1);
+      end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23,59,59,999);
+    } else if (filter === "lastMonth") {
+      const lmYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+      const lmMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+      start = new Date(lmYear, lmMonth, 1);
+      end = new Date(lmYear, lmMonth + 1, 0, 23,59,59,999);
+    } else if (filter === "custom" && from && to) {
+      const f = new Date(from);
+      const t = new Date(to);
+      if (!isNaN(f) && !isNaN(t)) {
+        start = new Date(f.getFullYear(), f.getMonth(), f.getDate(), 0, 0, 0, 0);
+        end = new Date(t.getFullYear(), t.getMonth(), t.getDate(), 23, 59, 59, 999);
+      }
+    }
+
+    if (start && end) {
+      query.createdAt = { $gte: start, $lte: end };
+    }
+
+    // --------------------------
+    // FETCH AGENTS + ITEMS
+    // --------------------------
+    const agents = await Agent.find(query).populate("items").sort({ createdAt: -1 });
+
+    // --------------------------
+    // GLOBAL STATS
+    // --------------------------
+    let totalAgents = agents.length;
+    let totalPercentageAmount = 0;
+    let totalPercentageAmountGiven = 0;
+    let totalPercentageAmountLeft = 0;
+
+    agents.forEach(agent => {
+      agent.items.forEach(item => {
+        totalPercentageAmount += Number(item.percentageAmount || 0);
+        totalPercentageAmountGiven += Number(item.paidAmount || 0);
+        totalPercentageAmountLeft += Number(item.percentageAmount || 0) - Number(item.paidAmount || 0);
+      });
+    });
+
+    // --------------------------
+    // SEND TO EJS
+    // --------------------------
+    res.render("allAgents", {
+      agents,
+      stats: {
+        totalAgents,
+        totalPercentageAmount,
+        totalPercentageAmountGiven,
+        totalPercentageAmountLeft
+      },
+      filter,
+      from,
+      to
+    });
+
+  } catch (err) {
+    console.error("❌ Error in /all agents route:", err);
+    res.status(500).send("Error loading agents page");
+  }
+});
+
+
+
+
+
+
+router.delete("/delete-agent/:id", async (req, res) => {
+  try {
+    const agentId = req.params.id;
+    const deletedAgent = await Agent.findByIdAndDelete(agentId);
+    if (!deletedAgent) {
+      return res.status(404).json({ success: false, message: "Agent not found" });
+    }
+    res.json({ success: true, message: "Agent deleted successfully!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Error deleting agent" });
+  }
+});
+
+
+
+
+
+
+
+router.get('/view-agent/:id',async(req,res)=>{
+  try {
+    let { filter, from, to } = req.query;
+    let query = {};
+    const now = new Date();
+    let start, end;
+
+    // --------------------------
+    // DATE FILTERS
+    // --------------------------
+    if (filter === "today") {
+      start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0,0,0,0);
+      end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23,59,59,999);
+    } else if (filter === "yesterday") {
+      const y = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+      start = new Date(y.getFullYear(), y.getMonth(), y.getDate(), 0,0,0,0);
+      end = new Date(y.getFullYear(), y.getMonth(), y.getDate(), 23,59,59,999);
+    } else if (filter === "month") {
+      start = new Date(now.getFullYear(), now.getMonth(), 1);
+      end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23,59,59,999);
+    } else if (filter === "lastMonth") {
+      const lmYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+      const lmMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+      start = new Date(lmYear, lmMonth, 1);
+      end = new Date(lmYear, lmMonth + 1, 0, 23,59,59,999);
+    } else if (filter === "custom" && from && to) {
+      const f = new Date(from);
+      const t = new Date(to);
+      if (!isNaN(f) && !isNaN(t)) {
+        start = new Date(f.getFullYear(), f.getMonth(), f.getDate(), 0, 0, 0, 0);
+        end = new Date(t.getFullYear(), t.getMonth(), t.getDate(), 23, 59, 59, 999);
+      }
+    }
+
+    if (start && end) {
+      query.createdAt = { $gte: start, $lte: end };
+    }
+
+    // --------------------------
+    // FETCH AGENT + ITEMS
+    // --------------------------
+    const agent = await Agent.findOne({ _id: req.params.id }).populate({
+    path: "items",
+    match: query,
+    options: { sort: { createdAt: -1 } }
+    });
+
+
+
+    // --------------------------
+    // GLOBAL STATS
+    // --------------------------
+    let totalPercentageAmount = 0;
+    let totalPercentageAmountGiven = 0;
+    let totalPercentageAmountLeft = 0;
+
+      agent.items.forEach(item => {
+        totalPercentageAmount += Number(item.percentageAmount || 0);
+        totalPercentageAmountGiven += Number(item.paidAmount || 0);
+        totalPercentageAmountLeft += Number(item.percentageAmount || 0) - Number(item.paidAmount || 0);
+      });
+    
+
+    // --------------------------
+    // SEND TO EJS
+    // --------------------------
+    res.render("viewAgent", {
+      agent,
+      stats: {
+        totalPercentageAmount,
+        totalPercentageAmountGiven,
+        totalPercentageAmountLeft
+      },
+      filter,
+      from,
+      to
+    });
+
+  } catch (err) {
+    console.error("❌ Error in /view agents route:", err);
+    res.status(500).send("Error loading agents page");
+  }
+
+});
+
+
+
+
+router.delete("/delete-item/:id", async (req, res) => {
+  try {
+    const itemId = req.params.id;
+    const deletedItem = await Item.findByIdAndDelete(itemId);
+    if (!deletedItem) {
+      return res.status(404).json({ success: false, message: "Item not found" });
+    }
+    res.json({ success: true, message: "Item deleted successfully!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Error deleting Item" });
+  }
+});
+
+
+
+
+
+router.post("/pay-item/:id", async (req, res) => {
+  try {
+    const item = await Item.findById(req.params.id);
+
+    if (!item) return res.json({ success: false });
+
+    const amount = Number(req.body.amount);
+
+    // Prevent overpayment
+    if (item.paidAmount + amount > item.percentageAmount) {
+      return res.json({ success: false, message: "Over payment not allowed" });
+    }
+    
+    // Update payment
+    item.paidAmount += amount;
+
+    // Update status
+    if (item.paidAmount >= item.percentageAmount) {
+      item.paidStatus = "Paid";
+    } else if (item.paidAmount > 0) {
+      item.paidStatus = "Partial";
+    } else {
+      item.paidStatus = "Unpaid";
+    }
+
+    await item.save();
+
+    res.json({ success: true });
+
+  } catch (err) {
+    console.log(err);
+    res.json({ success: false });
+  }
+});
+
+
+
+
 
 
 export default router;

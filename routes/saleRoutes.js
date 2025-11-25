@@ -1,6 +1,9 @@
 import express from 'express';  
 import Product from "../models/Product.js";
 import Sale from "../models/Sale.js";
+import Agent from '../models/Agent.js';
+import Item from '../models/Item.js';
+
 
 const router = express.Router();
 
@@ -9,16 +12,22 @@ const router = express.Router();
 ================================ */
 router.get("/add", async (req, res) => {
   try {
-    // Fetching products by itemName and stockID
+    // Fetch all products
     const products = await Product.find();
-    
-    // Send products to the EJS template
-    res.render("addSale", { products });
+
+    // Fetch all agents
+    const agents = await Agent.find();
+
+    // Render EJS with products and agents
+    res.render("addSale", { products, agents });
   } catch (err) {
     console.error("❌ Error loading Add Sale page:", err);
     res.status(500).send("Error loading Add Sale page");
   }
 });
+
+
+
 
 
 /* ================================
@@ -28,72 +37,79 @@ router.get("/add", async (req, res) => {
 // Add Sale (POST) - with FIFO logic removed but ensuring proper profit/loss calculation
 router.post("/add", async (req, res) => {
   try {
-    const { brandName, itemName, colourName, qty, quantitySold, rate, stockID,saleID } = req.body;
-    let remainingToSell = parseInt(quantitySold);
+    const { sales, agentID, percentage } = req.body; // frontend se pura tempSales array bhejna
 
-    // ❌ Validation
-    if (!itemName || !rate || !quantitySold || !stockID || !saleID) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required.",
-      });
+    if (!sales || !Array.isArray(sales) || sales.length === 0) {
+      return res.status(400).json({ success: false, message: "No sales provided." });
     }
 
-    // 🟢 Find product by stockID
-    const product = await Product.findOne({ stockID });
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: `No available product found for ${itemName} (${qty}).`,
+    let totalQuantityForAgent = 0;
+    let totalAmountForAgent = 0;
+
+    // loop through all sales and create Sale documents
+    for (const s of sales) {
+      const { brandName, itemName, colourName, qty, quantitySold, rate, stockID, saleID } = s;
+
+      const product = await Product.findOne({ stockID });
+      if (!product) return res.status(404).json({ success: false, message: `Product not found: ${itemName}` });
+
+      if (quantitySold > product.remaining)
+        return res.status(400).json({ success: false, message: `Only ${product.remaining} left for ${itemName}!` });
+
+      const profit = Math.round(((rate - (product.rate || 0)) * quantitySold + Number.EPSILON) * 100)/100;
+      product.remaining -= quantitySold;
+      await product.save();
+
+      await Sale.create({
+        brandName,
+        itemName,
+        colourName,
+        qty,
+        quantitySold,
+        rate,
+        stockID,
+        saleID,
+        profit,
+        refundQuantity: 0,
+        refundStatus: "none"
       });
+
+      if (agentID && percentage > 0) {
+        totalQuantityForAgent += quantitySold;
+        totalAmountForAgent += quantitySold * rate;
+      }
     }
 
-    const available = product.remaining;
-    if (remainingToSell > available) {
-      return res.status(400).json({
-        success: false,
-        message: `Not enough stock for ${itemName} (${qty}). Only ${available} units available.`,
-      });
+    // ✅ Agent Item creation once
+    if (agentID && percentage > 0) {
+      const agent = await Agent.findOne({ agentID });
+      if (agent) {
+        const percentageAmount = Math.round((totalAmountForAgent * percentage / 100 + Number.EPSILON) * 100) / 100;
+
+        const agentItem = await Item.create({
+          agent: agent._id,
+          totalProductSold: totalQuantityForAgent,
+          totalProductAmount: totalAmountForAgent,
+          percentage,
+          percentageAmount,
+          paidStatus: "Unpaid"
+        });
+
+        agent.items.push(agentItem._id);
+        await agent.save();
+      }
     }
 
-    // 🧮 Profit calculation
-    const purchaseRate = product.rate || 0
-    const saleProfit = Math.round(((rate - purchaseRate) * remainingToSell + Number.EPSILON) * 100) / 100;
-
-
-    // 🟡 Reduce product stock
-    product.remaining -= remainingToSell;
-    await product.save();
-
-    // 🆕 Always create new sale
-    const sale = await Sale.create({
-      brandName,
-      itemName,
-      colourName,
-      qty,
-      quantitySold: remainingToSell,
-      rate,
-      stockID,
-      saleID,
-      profit: saleProfit,
-      refundQuantity: 0,
-      refundStatus: "none",
-    });
-
-    return res.json({
-      success: true,
-      message: `Sale of ${remainingToSell} ${itemName} units completed successfully.`,
-      profit: saleProfit.toFixed(2),
-    });
+    res.json({ success: true, message: `All sales completed successfully.` });
 
   } catch (err) {
-    console.error("❌ Error during sale:", err);
-    res.status(500).json({
-      success: false,
-      message: "Server error: " + err.message,
-    });
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error: " + err.message });
   }
 });
+
+
+
 
 
 

@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/stylesheets/addSale.css">
 </head>
 <body>
-  <h1>Add New Sale</h1>
+  <h1>Add New Sales</h1>
 
   <div class="form-container">
     <!-- Brand dropdown -->
@@ -36,10 +36,22 @@
 
     <!-- Quantity and Rate -->
     <input id="quantitySold" type="number" placeholder="Quantity Sold" min="1" />
-    <input id="rate" type="number" placeholder="Rate" min="0" />
+    <input id="rate" type="number" placeholder="Rate" min="1"  />
 
     <!-- Total Stock readonly -->
-    <input id="totalStock" type="number" placeholder="Total Stock" readonly />
+    <input id="totalStock" type="number" placeholder="Total Stock" hidden />
+
+    <!-- Agent Dropdown -->
+<select id="agentSelect">
+  <option value="">Select Agent</option>
+  <% agents.forEach(agent => { %>
+    <option value="<%= agent.agentID %>"><%= agent.name  %> (<%= agent.phone %>)</option>
+  <% }) %>
+</select>
+
+<!-- Percentage input, hidden by default -->
+<input id="agentPercentage" type="number" placeholder="Agent Percentage" min="0" max="100" style="display:none;" />
+
 
     <button onclick="addSaleEntry()" id="add">Add Sale</button>
   </div>
@@ -47,8 +59,6 @@
   <table>
     <thead>
       <tr>
-        <th>Stock ID</th>
-        <th>Sale ID</th>
         <th>Brand</th>
         <th>Item</th>
         <th>Unit</th>
@@ -67,6 +77,20 @@
   <button class="submit-btn" onclick="submitSales()">Submit & Save</button>
 
 <script>
+
+const agentSelect = document.getElementById("agentSelect");
+const agentPercentage = document.getElementById("agentPercentage");
+
+agentSelect.addEventListener("change", function() {
+  if (this.value) {
+    agentPercentage.style.display = "inline-block";
+  } else {
+    agentPercentage.style.display = "none";
+    agentPercentage.value = "";
+  }
+});
+
+
 const products = JSON.parse('<%- JSON.stringify(products || []) %>');
 let tempSales = [];
 
@@ -196,17 +220,10 @@ function addSaleEntry() {
   let selectedProduct = null;
 
   if (colourOption && colourOption.value) {
-    // Match using stockID from dropdown
-    selectedProduct = products.find(
-      p => String(p.stockID) === String(colourOption.value)
-    );
+    selectedProduct = products.find(p => String(p.stockID) === String(colourOption.value));
   } else {
-    // Fallback: match by brand + item + unit
     selectedProduct = products.find(
-      p =>
-        p.brandName === brand &&
-        p.itemName === item &&
-        p.qty === unit
+      p => p.brandName === brand && p.itemName === item && p.qty === unit
     );
   }
 
@@ -235,7 +252,6 @@ function addSaleEntry() {
   // 💰 Calculate total
   const total = Math.round((qtySold * rateVal + Number.EPSILON) * 100) / 100;
 
-
   // 📝 Push new sale into temp array
   tempSales.push({
     stockID: selectedProduct.stockID,
@@ -246,20 +262,26 @@ function addSaleEntry() {
     colourName: selectedProduct.colourName || "",
     quantitySold: qtySold,
     rate: rateVal,
-    total,
+    total
   });
 
   // 🧾 Refresh sale table
   renderSalesTable();
 
-  // 🧹 Clear inputs
+  // 🧹 Clear all inputs **except agent and percentage**
+  brandSelect.value = "";
+  itemSelect.innerHTML = '<option value="">Select Item</option>';
+  itemSelect.disabled = true;
+  unitSelect.innerHTML = '<option value="">Select Unit</option>';
+  unitSelect.disabled = true;
+  colourSelect.innerHTML = '<option value="">Select Colour</option>';
+  colourSelect.disabled = true;
   quantitySold.value = "";
   rate.value = "";
   totalStock.value = "";
-
-  // Optionally update the stock display in dropdown or input
-  totalStock.placeholder = `Remaining: ${remaining - qtySold}`;
+  totalStock.placeholder = "";
 }
+
 
 
 
@@ -274,8 +296,6 @@ function renderSalesTable() {
 
   tempSales.forEach((p, i) => {
     tbody.innerHTML += `<tr>
-      <td>${p.stockID}</td>
-      <td>${p.saleID}</td>
       <td>${p.brandName}</td>
       <td>${p.itemName}</td>
       <td>${p.qty}</td>
@@ -293,32 +313,49 @@ function deleteSale(index) {
   renderSalesTable();
 }
 
+
 async function submitSales() {
   if (tempSales.length === 0) {
     alert("⚠️ No sales to submit!");
     return;
   }
+
   try {
-    for (const sale of tempSales) {
-      const res = await fetch("/sales/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(sale)
-      });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message || "Failed to save sale");
-    }
-    alert("✅ Sales saved successfully!");
+    const payload = {
+      sales: tempSales,
+      agentID: agentSelect.value || null,
+      percentage: agentPercentage.value ? parseFloat(agentPercentage.value) : 0
+    };
+
+    const res = await fetch("/sales/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || "Failed to save sales");
+
+    alert("✅ All sales saved successfully!");
     const printData = encodeURIComponent(JSON.stringify(tempSales));
     window.open(`/sales/print?data=${printData}`, "_blank");
+
     tempSales = [];
     renderSalesTable();
+    quantitySold.value = "";
+    rate.value = "";
+    totalStock.value = "";
+    agentPercentage.value = "";
+
     setTimeout(() => location.reload(), 1000);
+
   } catch (err) {
     alert("❌ Error: " + err.message);
     console.error(err);
   }
 }
+
+
 
 function resetDropdowns() {
   itemSelect.innerHTML = '<option value="">Select Item</option>';

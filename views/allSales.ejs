@@ -89,8 +89,6 @@
 <table>
   <thead>
     <tr>
-      <th>Stock ID</th>
-      <th>Sale ID</th>
       <th>Brand Name</th>
       <th>Item Name</th>
       <th>Item Colour</th>
@@ -111,18 +109,16 @@
     <% } else { %>
       <% sales.forEach(s => { %>
         <tr>
-          <td><%= s.stockID %></td>
-          <td><%= s.saleID %></td>
           <td><%= s.brandName %></td>
           <td><%= s.itemName %></td>
           <td><%= s.colourName %></td>
           <td><%= s.qty %></td>
           <td><%= s.quantitySold %></td>
-           <td>Rs <%= parseFloat(s.rate.toFixed(2)) %></td>
-         <td>Rs <%= parseFloat((s.quantitySold * s.rate).toFixed(2)) %></td>
+          <td>Rs <%= parseFloat(s.rate.toFixed(2)) %></td>
+          <td>Rs <%= parseFloat((s.quantitySold * s.rate).toFixed(2)) %></td>
           <td class="<%= s.profit < 0 ? 'loss' : 'profit' %>">
-      Rs <%= parseFloat(s.profit.toFixed(2)) %>
-  </td>
+          Rs <%= parseFloat(s.profit.toFixed(2)) %>
+          </td>
           <td class="refund-status"><%= s.refundStatus %></td>
           <td class="refund-quantity"><%= s.refundQuantity %></td>
           <td><%= new Date(s.createdAt).toLocaleDateString() %></td>
@@ -454,12 +450,14 @@ function populateColourFilter(brand, item) {
   }
 }
 
+
 function toggleDateInputs(value) {
   const from = document.getElementById("from");
   const to = document.getElementById("to");
   if (value === "custom") { from.style.display = "inline-block"; to.style.display = "inline-block"; }
   else { from.style.display = "none"; to.style.display = "none"; }
 }
+
 
 // Event Listeners
 brandFilter.addEventListener('change', () => { populateItemFilter(brandFilter.value); populateUnitFilter(brandFilter.value); populateColourFilter(brandFilter.value, itemFilter.value); if (brandFilter.dataset.initialized) brandFilter.form.submit(); });
