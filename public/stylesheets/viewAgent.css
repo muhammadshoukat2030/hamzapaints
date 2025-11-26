@@ -237,18 +237,15 @@ button#submit:focus {
       padding: 12px 0px; 
       text-align: center;
       font-size: 13.2px;
+      background-color: #06a56c; 
+      color: white; 
      }
-
-
-     th{ 
-     background-color: #06a56c; 
-     color: white; 
-    } 
 
     tr:hover td{ 
     background-color: #f1f1f1; 
     }
 
+    
     td.profit{
      font-weight: bold;
      color: #06a56c;
