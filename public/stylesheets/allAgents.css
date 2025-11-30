@@ -16,18 +16,17 @@
       background-color: #f1f1f1;
     }
 
-    body{
+    /* body{
       font-family: 'Segoe UI', sans-serif;
       background-color: #f4f7fa;
       margin: 0px auto;
-      /* border: 2px solid red; */
       max-width: 1200px;
-    }
+    } */
     
     h1{
       color: #06a56c;
       text-align: center;
-      margin-bottom: 5px;
+      margin-bottom: 10px;
       font-size: 24px;
     }
 
@@ -161,7 +160,7 @@ button#view{
     .stat-box {
       background-color: white;
       border-radius: 9px;
-     padding: 20px 65px;
+      padding: 20px 65px;
       box-shadow: 0 3px 8px rgba(0,0,0,0.1);
       text-align: center;
       /* min-width: 10px; */

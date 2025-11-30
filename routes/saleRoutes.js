@@ -3,6 +3,7 @@ import Product from "../models/Product.js";
 import Sale from "../models/Sale.js";
 import Agent from '../models/Agent.js';
 import Item from '../models/Item.js';
+import { isAdminLoggedIn } from '../middleware/isadminloggedin.js';
 
 
 const router = express.Router();
@@ -10,7 +11,7 @@ const router = express.Router();
 /* ================================
    🟢 1️⃣ Add Sale Page (GET)
 ================================ */
-router.get("/add", async (req, res) => {
+router.get("/add",isAdminLoggedIn, async (req, res) => {
   try {
     // Fetch all products
     const products = await Product.find();
@@ -35,7 +36,7 @@ router.get("/add", async (req, res) => {
    ✅ No FIFO logic, directly decrease stock
 ================================ */
 // Add Sale (POST) - with FIFO logic removed but ensuring proper profit/loss calculation
-router.post("/add", async (req, res) => {
+router.post("/add",isAdminLoggedIn, async (req, res) => {
   try {
     const { sales, agentID, percentage } = req.body; // frontend se pura tempSales array bhejna
 
@@ -120,7 +121,7 @@ router.post("/add", async (req, res) => {
 ================================ */
 
 
-router.get("/all", async (req, res) => {
+router.get("/all",isAdminLoggedIn, async (req, res) => {
   try {
     let { filter, from, to, brand, itemName, colourName, unit, refund } = req.query;
     let query = {};
@@ -250,7 +251,7 @@ router.get("/all", async (req, res) => {
 /* ================================
    🟢 4️⃣ Delete Sale (DELETE)
 ================================ */
-router.delete("/delete-sale/:id", async (req, res) => {
+router.delete("/delete-sale/:id",isAdminLoggedIn, async (req, res) => {
   try {
     const saleId = req.params.id;
     const deletedSale = await Sale.findByIdAndDelete(saleId);
@@ -266,7 +267,7 @@ router.delete("/delete-sale/:id", async (req, res) => {
 
 
 
-router.get('/print', async (req, res) => {
+router.get('/print',isAdminLoggedIn, async (req, res) => {
   let sales = [];
 
   if (req.query.data) {

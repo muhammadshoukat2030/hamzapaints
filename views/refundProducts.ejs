@@ -9,6 +9,12 @@
 </head>
 <body>
 
+<%- include('partials/navbar') %>
+
+
+<main>
+
+<div class="content-wrapper">
 <div class="form-wrapper">
   <h1>Refund Products</h1>
 
@@ -22,6 +28,7 @@
   <div id="refundResult" style="margin-top:20px; font-size:16px;"></div>
 </div>
 
+</main>
 <script>
 const refundForm = document.getElementById("refundForm");
 const refundResult = document.getElementById("refundResult");
@@ -65,6 +72,6 @@ refundForm.addEventListener("submit", async function(e) {
 });
 </script>
 
-
+</div>
 </body>
 </html>

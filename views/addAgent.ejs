@@ -9,7 +9,10 @@
 </head>
 <body>
 
-  
+<%- include('partials/navbar') %>
+
+<main>
+<div class="content-wrapper">
 <div class="form-wrapper">
   <h1>Add New Agent</h1>
   
@@ -23,6 +26,9 @@
   <!-- Message area -->
   <p id="message" style="margin-top:20px; font-size:16px; text-align: center;"></p>
 </div>
+</div>  
+
+</main>
 
 <script>
   document.getElementById("agentForm").addEventListener("submit", async (e) => {

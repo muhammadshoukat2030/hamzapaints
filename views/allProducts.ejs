@@ -7,6 +7,10 @@
   <link rel="stylesheet" href="/stylesheets/allProducts.css">
 </head>
 <body>
+ <%- include('partials/navbar') %>
+
+ <main>
+  
 <h1>All Products</h1>
 
 <form class="filter-container" method="GET" action="/products/all" id="filterForm">
@@ -92,9 +96,9 @@
 <table>
   <thead>
     <tr>
-      <th>Brand Name</th>
-      <th>Item Name</th>
-      <th>Item Colour</th>
+      <th>Brand</th>
+      <th>Item</th>
+      <th>Colour</th>
       <th>Unit</th>
       <th>Total Product</th>
       <th>Remaining</th>
@@ -129,6 +133,8 @@
     <% } %>
   </tbody>
 </table>
+
+</main>
 
 <script>
   const brandItems = {

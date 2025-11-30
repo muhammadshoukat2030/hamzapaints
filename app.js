@@ -1,19 +1,24 @@
 import express from "express";
-import mongoose from "mongoose";
 import path from "path";
 import dotenv from "dotenv"; // dotenv for environment variables
+import connectDB from "./config/db.js"; 
 import { fileURLToPath } from "url"; // for handling ES modules' file paths
+import cookieParser from "cookie-parser";
+import { isAdminLoggedIn } from "./middleware/isadminloggedin.js";
+   
 
 
-
+import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import saleRoutes from "./routes/saleRoutes.js";
 import agentRoutes from "./routes/agentRoutes.js";
 
 
 
-// Initialize dotenv for environment variables
-dotenv.config();
+
+dotenv.config();    // Initialize dotenv for environment variables
+connectDB();        // connect to MongoDB
+
 
 // Get __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -30,26 +35,26 @@ app.set("views", path.join(__dirname, "views"));
 // Serve static files (for CSS, images, etc.)
 app.use(express.static(path.join(__dirname, "public"))); // Customize folder name if needed
 
-
-// MongoDB connection using environment variable
-mongoose.connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/paintStore", { 
-  useNewUrlParser: true, 
-  useUnifiedTopology: true 
-})
-  .then(() => console.log("✅ MongoDB Connected"))
-  .catch(err => console.error("❌ MongoDB Error:", err));
-
+app.use(cookieParser()); // must be BEFORE routes
 
 
 // Routes
 app.use("/products", productRoutes);
 app.use("/sales", saleRoutes);
 app.use("/agents", agentRoutes);
+app.use("/auth", authRoutes);
 
 
 
 // Default route (redirect to 'add-sale')
-app.get("/", (req, res) => res.redirect("/sales/add"));
+app.get("/", (req, res) => res.redirect("/auth/login"));
+
+
+
+app.get("/home",isAdminLoggedIn,(req,res)=>{
+  res.render('home');
+});
+
 
 
 
@@ -66,6 +71,7 @@ app.use((err, req, res, next) => {
 });
 
 
+
 // Server start using environment variable for port
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
@@ -74,55 +80,8 @@ app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PO
 
 
 
-// 10-11-2025 ( Today Task ✅ Done ) 
-// add product print page 
-// add sale print page    
 
 
-
-
-// 11-11-2025    ?
-// add sale page modification?
-// custom date filter modification?
-
-
-
-// 12-11-2025
-// agent side integration with add sale page 
-
-
-
-// 13-11-2025
-// UI Modification + Responsiveness + Menu bar + Dashboard Home page
-
-
-// 14-11-2025
-// Authentication + protected routes  + middlewares + config
-
-
-// 15-11-2025
-// full admin site Review
-
-
-// 16-11-2025
-// full worker side day 1
-
-
-// 17-11-2025
-// full worker side day 2
-
-
-
-// 18-11-2025
-// full code review admin + worker side both 
-
-
-// 19-11-2025
-// Deployments + Testing + Fixing
-
-
-// 20-11-2025
-// Deliver to client 
 
 
 

@@ -2,14 +2,15 @@ import express from 'express';
 const router = express.Router();
 import Agent from '../models/Agent.js';
 import Item from '../models/Item.js';
+import { isAdminLoggedIn } from '../middleware/isadminloggedin.js';
 
 
-router.get('/add',(req,res)=>{
+router.get('/add',isAdminLoggedIn,(req,res)=>{
 res.render('addAgent');
 });
 
 
-router.post("/add", async (req, res) => {
+router.post("/add",isAdminLoggedIn, async (req, res) => {
   try {
     const { name, phone, cnic } = req.body;
 
@@ -50,7 +51,7 @@ router.post("/add", async (req, res) => {
 
 
 
-router.get("/all", async (req, res) => {
+router.get("/all",isAdminLoggedIn, async (req, res) => {
   try {
     let { filter, from, to } = req.query;
     let query = {};
@@ -136,7 +137,7 @@ router.get("/all", async (req, res) => {
 
 
 
-router.delete("/delete-agent/:id", async (req, res) => {
+router.delete("/delete-agent/:id",isAdminLoggedIn, async (req, res) => {
   try {
     const agentId = req.params.id;
     const deletedAgent = await Agent.findByIdAndDelete(agentId);
@@ -154,9 +155,7 @@ router.delete("/delete-agent/:id", async (req, res) => {
 
 
 
-
-
-router.get('/view-agent/:id',async(req,res)=>{
+router.get('/view-agent/:id',isAdminLoggedIn,async(req,res)=>{
   try {
     let { filter, from, to } = req.query;
     let query = {};
@@ -244,7 +243,7 @@ router.get('/view-agent/:id',async(req,res)=>{
 
 
 
-router.delete("/delete-item/:id", async (req, res) => {
+router.delete("/delete-item/:id",isAdminLoggedIn, async (req, res) => {
   try {
     const itemId = req.params.id;
     const deletedItem = await Item.findByIdAndDelete(itemId);
@@ -262,7 +261,7 @@ router.delete("/delete-item/:id", async (req, res) => {
 
 
 
-router.post("/pay-item/:id", async (req, res) => {
+router.post("/pay-item/:id",isAdminLoggedIn, async (req, res) => {
   try {
     const item = await Item.findById(req.params.id);
 

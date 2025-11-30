@@ -7,6 +7,10 @@
   <link rel="stylesheet" href="/stylesheets/addSale.css">
 </head>
 <body>
+
+<%- include('partials/navbar') %>
+
+<main>
   <h1>Add New Sales</h1>
 
   <div class="form-container">
@@ -61,8 +65,8 @@
       <tr>
         <th>Brand</th>
         <th>Item</th>
-        <th>Unit</th>
-        <th>Colour</th>
+         <th>Colour</th>
+         <th>Unit</th>
         <th>Quantity Sold</th>
         <th>Rate</th>
         <th>Total</th>
@@ -75,7 +79,7 @@
   </table>
 
   <button class="submit-btn" onclick="submitSales()">Submit & Save</button>
-
+</main>
 <script>
 
 const agentSelect = document.getElementById("agentSelect");
@@ -298,8 +302,8 @@ function renderSalesTable() {
     tbody.innerHTML += `<tr>
       <td>${p.brandName}</td>
       <td>${p.itemName}</td>
-      <td>${p.qty}</td>
       <td>${p.colourName}</td>
+      <td>${p.qty}</td>
       <td>${p.quantitySold}</td>
       <td>${p.rate}</td>
       <td>${p.total}</td>

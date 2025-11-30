@@ -7,6 +7,10 @@
   <link rel="stylesheet" href="/stylesheets/allSales.css">
 </head>
 <body>
+<%- include('partials/navbar') %>
+
+<main>
+
 <h1>All Sales</h1>
 
 <form class="filter-container" method="GET" action="/sales/all">
@@ -66,7 +70,7 @@
     </div>
     <div class="stat-box">
       <h3>Total Sales</h3>
-      <p>Rs <%= stats.totalRevenue || 0 %></p>
+      <p>Rs <%= stats.totalRevenue ? stats.totalRevenue.toFixed(2) : '0.00' %></p>
     </div>
    <div class="stat-box">
   <h3>Total Profit</h3>
@@ -89,9 +93,9 @@
 <table>
   <thead>
     <tr>
-      <th>Brand Name</th>
-      <th>Item Name</th>
-      <th>Item Colour</th>
+      <th>Brand</th>
+      <th>Item</th>
+      <th>Colour</th>
       <th>Unit</th>
       <th>Quantity Sold</th>
       <th>Rate</th>
@@ -129,6 +133,7 @@
   </tbody>
 </table>
 
+</main>
 <script>
   const brandItems = {
   "Weldon Paints": [

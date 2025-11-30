@@ -16,13 +16,12 @@
   background-color: #f1f1f1;
 }
 
-  body{
+    /* body{
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f7f9fc;
+      background-color: #f4f7fa;
       margin: 0px auto;
       max-width: 1200px;
-      /* border: 10px solid red; */
-    }
+    } */
 
     h1{
       color: #06a56c;
@@ -34,7 +33,7 @@
     .form-container {
       display: flex;
       justify-content: center;
-      gap: 10px;
+      gap: 7px;
       margin-bottom: 20px;
       flex-wrap: wrap;
     }

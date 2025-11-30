@@ -7,6 +7,9 @@
   <link rel="stylesheet" href="/stylesheets/viewAgent.css">
 </head>
 <body>
+<%- include('partials/navbar') %>
+
+<main>
 <h1>View Agent - <%= agent.name %></h1>
 
 <!-- Filter Section -->
@@ -49,8 +52,8 @@
     <tr>
       <th>Product Sold</th>
       <th>Product Amount</th>
-      <th>Percentage</th>
-      <th>Percentage Amount</th>
+      <th>%</th>
+      <th>% Amount</th>
       <th>Item Status</th>
       <th>Paid Amount</th>
       <th>Left Amount</th>
@@ -88,8 +91,7 @@
     Pay
   </button>
 
-  <!-- Delete Button -->
-  <button onclick="deleteItem('<%= i._id %>')" id="delete">Delete</button>
+  
 
   <!-- Pay Input Box -->
   <div id="paybox-<%= i._id %>" style="display:none; margin-top: 5px;">
@@ -105,7 +107,7 @@
     <% } %>
   </tbody>
 </table>
-
+</main>
 <script>
 function toggleDateInputs(value) {
   const from = document.getElementById("from");
