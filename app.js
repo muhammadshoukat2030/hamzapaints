@@ -8,6 +8,7 @@ import helmet from "helmet";
 import cors from "cors";
 import session from "express-session";
 
+
 // Routes
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
@@ -63,7 +64,7 @@ app.use(
 // 🛡 SECURITY LAYER 3 → CORS (Local + Vercel ready)
 // =======================================================
 const allowedOrigins = process.env.NODE_ENV === "production"
-  ? ["https://your-vercel-app.vercel.app"]  // ⚠️ Replace with your deployed domain
+  ? ["https://your-vercel-app.vercel.app"]  
   : ["http://localhost:3000"];
 
 app.use(cors({
@@ -72,11 +73,20 @@ app.use(cors({
   credentials: true
 }));
 
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (!origin || allowedOrigins.includes(origin)) {
+    next();
+  } else {
+    res.status(403).send("❌ Forbidden");
+  }
+});
+
+
 // =======================================================
 // 🛡 SECURITY LAYER 4 → Trust proxy (for Vercel)
 // =======================================================
 app.set("trust proxy", process.env.NODE_ENV === "production");
-
 // =======================================================
 // 🛡 SECURITY LAYER 5 → Parsers
 // =======================================================
@@ -147,3 +157,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on ${process.env.NODE_ENV === "production" ? "Vercel" : "http://localhost:" + PORT}`);
 });
+
