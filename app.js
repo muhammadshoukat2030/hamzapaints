@@ -64,7 +64,7 @@ app.use(
 // 🛡 SECURITY LAYER 3 → CORS (Local + Vercel ready)
 // =======================================================
 const allowedOrigins = process.env.NODE_ENV === "production"
-  ? ["https://your-vercel-app.vercel.app"]  
+  ? ["https://paintsstore.vercel.app"]  
   : ["http://localhost:3000"];
 
 app.use(cors({
@@ -73,14 +73,14 @@ app.use(cors({
   credentials: true
 }));
 
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (!origin || allowedOrigins.includes(origin)) {
-    next();
-  } else {
-    res.status(403).send("❌ Forbidden");
-  }
-});
+// app.use((req, res, next) => {
+//   const origin = req.headers.origin;
+//   if (!origin || allowedOrigins.includes(origin)) {
+//     next();
+//   } else {
+//     res.status(403).send("❌ Forbidden");
+//   }
+// });
 
 
 // =======================================================
