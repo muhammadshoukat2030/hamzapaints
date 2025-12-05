@@ -238,7 +238,7 @@ router.post("/login", checkIPBlocked, loginLimiter, isAlreadyLoggedIn, async (re
     console.error(err);
     return res.status(500).json({
       success: false,
-      message: "Server error! Please fuck fareha again."
+      message: "Server error! Please try again."
     });
   }
 });
