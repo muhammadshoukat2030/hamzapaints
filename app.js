@@ -62,42 +62,43 @@ app.use(
 // =======================================================
 // 🛡 SECURITY LAYER 3 → CORS+ORIGIN (Local + Vercel ready)
 // =======================================================
-// ===== Allowed origins =====
+// Allowed origins
 const allowedOrigins = process.env.NODE_ENV === "production"
-  ? ["https://paintsstore.vercel.app"]  // Production main domain
-  : ["http://localhost:3000"];          // Development localhost
+  ? ["https://paintsstore.vercel.app"]   // Add your production domain(s) here
+  : ["http://localhost:3000"];           // Localhost for dev
 
-// ===== Strict CORS Middleware =====
+// ===== CORS Middleware =====
 app.use(cors({
   origin: function(origin, callback) {
-    // Strict: Only allow listed origins
-    if (origin && allowedOrigins.includes(origin)) {
-      return callback(null, true);
+    // origin null -> Postman, curl, server-side request
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true); // allowed
     }
 
-    // Reject all others
-    return callback(new Error("❌ Forbidden: Origin not allowed"));
+    // not allowed
+    return callback(null, false);
   },
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
 
-// ===== Extra Middleware for Safety =====
+// ===== Strict Origin Check =====
 app.use((req, res, next) => {
   const origin = req.headers.origin;
 
-  // Only allow exact domains
-  if (origin && allowedOrigins.includes(origin)) {
+  // Allow requests with no origin (like Postman) or allowed origins
+  if (!origin || allowedOrigins.includes(origin)) {
     return next();
   }
 
-  // Block undefined origin too (strict)
+  // Forbidden response
   return res.status(403).json({
     success: false,
     message: "❌ Forbidden: Origin not allowed"
   });
 });
-
 
 
 
