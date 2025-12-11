@@ -48,6 +48,7 @@
 
   const productOptions = {
   "Weather Shield": [
+    { code: "1951", colour: "White" },
     { code: "1952", colour: "Off White" },
     { code: "7030", colour: "Apricot" },
     { code: "1948", colour: "Sugar Cane" },
@@ -111,7 +112,9 @@
 
   ],
   "Emulsion": [
-  
+
+    
+    { code: "0", colour: "White" },
     { code: "10", colour: "Off White" },
     { code: "43", colour: "Kitten White" },
     { code: "97", colour: "Rose White" },
@@ -141,7 +144,7 @@
     { code: "21", colour: "Blossom Pink" },
     { code: "112", colour: "Classical" },
     { code: "22", colour: "Sea Blue" },
-    { code: "101", colour: "Swiss Grey (New)" },
+    { code: "101", colour: "Swiss Grey New" },
     { code: "23", colour: "Tea Rose" },
     { code: "111", colour: "Dark Pink" },
     { code: "74", colour: "Moods" },
@@ -185,7 +188,8 @@
   ],
   "Enamel": [
 
-
+    { code: "241", colour: "Black" },
+    { code: "0", colour: "White" },
     { code: "222", colour: "Bone White" },
     { code: "272", colour: "Apricot (New)" },
     { code: "4022", colour: "Lemon" },
