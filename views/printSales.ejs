@@ -9,6 +9,8 @@
 
 <body>
   <button id="print-bill">print bill</button>
+  <div class="print-area">
+
   <h2> <img src="/images/weldon-paints-logo.png" id="logo"> <br> Hamza paints</h2>
   <p><b>Entry date:</b> <%= currentDate %></p>
 
@@ -51,6 +53,17 @@
     <span>Total items: <%= sales.length %></span>
     <span>Total amount: Rs <%= totalAmount.toFixed(2) %></span>
   </div>
+    <div class="thank-you-section">
+    THANK YOU FOR VISITING HAMZA PAINTS
+  </div>
+
+  <div class="dev-footer">
+    <span>Developed by: M. SHOUKAT</span>
+    <span>WhatsApp: 03358004900</span>
+  </div>
+
+   
+</div>
 
 <script src="/javascripts/printSales.js"></script> 
 </body>

@@ -1,4 +1,4 @@
-body{ 
+/* body{ 
 font-family: "Poppins", 
 sans-serif; 
 margin: 40px; 
@@ -41,3 +41,141 @@ justify-content:space-between;
     height: 80px;
 }
 
+
+@media print {
+  body {
+    width: 80mm;
+    margin: 0;
+    font-size: 12px;
+  }
+
+  table, th, td {
+    font-size: 12px;
+  }
+
+  .footer {
+    font-size: 12px;
+  }
+}
+.thank-you-section {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 20px;
+    font-size: 14px;
+}
+.dev-footer {
+    margin-top: 30px;
+    font-size: 10px;
+    text-align: center;
+    color: #555;
+}
+.dev-footer span {
+    display: block;
+} */
+/* ===== THERMAL SAFE RESET ===== */
+* {
+  box-sizing: border-box;
+  color: #000 !important;
+  background: transparent !important;
+  font-weight: 700;
+}
+
+/* ===== BODY ===== */
+body {
+  font-family: Arial, Courier, monospace; /* thermal best */
+  font-size: 12px;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== CENTER PRINT AREA ===== */
+.print-area {
+  width: 80mm;
+  margin: 0 auto;          /* PERFECT CENTER */
+  padding: 0;
+}
+
+/* ===== LOGO ===== */
+#logo {
+  width: 70px;
+  height: auto;
+  display: block;
+  margin: 0 auto 5px auto;
+}
+
+/* ===== SHOP NAME ===== */
+h1 {
+  font-size: 16px;
+  text-align: center;
+  margin: 4px 0;
+  font-weight: 800;
+}
+
+h2 {
+  font-size: 13px;
+  text-align: center;
+  margin: 2px 0;
+  font-weight: 800;
+}
+
+/* ===== INFO TEXT ===== */
+p {
+  font-size: 11px;
+  margin: 2px 0;
+}
+
+/* ===== TABLE ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 6px;
+}
+
+th, td {
+  font-size: 10.5px;       /* thermal clear */
+  padding: 2px 1px;
+  text-align: center;
+  border-bottom: 1px dashed #000;
+  font-weight: 700;
+}
+
+th {
+  font-weight: 800;
+}
+
+/* ===== TOTAL SECTION ===== */
+.footer {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ===== THANK YOU ===== */
+.thank-you-section {
+  margin-top: 10px;
+  font-size: 12px;
+  text-align: center;
+  font-weight: 800;
+}
+
+/* ===== DEV FOOTER ===== */
+.dev-footer {
+  margin-top: 12px;
+  font-size: 9px;
+  text-align: center;
+  font-weight: 700;
+}
+
+/* ===== PRINT SETTINGS ===== */
+@media print {
+  body {
+    margin: 0;
+  }
+
+  .print-area {
+    width: 80mm;
+    margin: 0 auto;
+  }
+}
