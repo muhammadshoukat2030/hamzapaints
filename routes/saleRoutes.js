@@ -189,9 +189,9 @@ router.get("/all", isLoggedIn, allowRoles("admin"), async (req, res) => {
         }
 
         // 🛑 YAHAN LOG HAMESHA RAKHEIN 🛑
-        console.log("PKT Start Time (UTC):", start);
-        console.log(`PKT End Time (${dateOperator}):`, end);
-        console.log("Final MongoDB Query:", query.createdAt);
+        // console.log("PKT Start Time (UTC):", start);
+        // console.log(`PKT End Time (${dateOperator}):`, end);
+        // console.log("Final MongoDB Query:", query.createdAt);
         // ------------------------------------
 
         // --- Brand filter mapping (match exact brand strings used in Add Product) ---
