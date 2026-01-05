@@ -287,7 +287,6 @@ body{
 /* ===== MAIN CONTAINER ===== */
 .calculator-container{
   width: 100%;
-  
   margin:40px auto;
   background:#ffffff;
   border-radius:24px;
