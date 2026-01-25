@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>All Items | Hamza Paints</title>
-    <link rel="stylesheet" href="/stylesheets/addDynamicData.css"> <style>
+    <link rel="stylesheet" href="/stylesheets/addProduct.css"> <style>
         .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
         .data-table th, .data-table td { padding: 12px; border: 1px solid #eee; text-align: left; }
         .data-table th { background-color: #06a56c; color: white; }
@@ -16,23 +16,23 @@
     <%- include('partials/navbar') %>
     <main>
         <div class="create-item-container">
-            <h2>All Item Definitions</h2>
+            <h2>All Data</h2>
             
             <% if (allDefinitions.length > 0) { %>
                 <table class="data-table">
                     <thead>
                         <tr>
                             <th>Brand & Units</th>
-                            <th>Product Name</th>
+                            <th>Item Name</th>
                             <th>Colors & Codes</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <% allDefinitions.forEach(brand => { %>
+                        <% allDefinitions.reverse().forEach(brand => { %>
                             <tr class="brand-row">
                                 <td colspan="4">
-                                    BRAND: <%= brand.brandName.toUpperCase() %> 
+                                    BRAND: <%= brand.brandName %> 
                                     <span style="margin-left:20px; font-weight:normal; color:#666;">
                                         Units: <% brand.units.forEach(u => { %>
                                             <span class="tag unit-tag"><%= u %></span>
@@ -47,14 +47,13 @@
                                     <td>
                                         <% if(product.hasColors && product.colors.length > 0) { %>
                                             <% product.colors.forEach(c => { %>
-                                                <span class="tag"><%= c.colour %> (<%= c.code %>)</span>
+                                                <span class="tag"><%= c.colour %> (<%=  c.code %>)</span>
                                             <% }) %>
                                         <% } else { %>
                                             <span style="color: #ccc;">No Colors</span>
                                         <% } %>
                                     </td>
                                     <td>
-                                        <button class="tag" style="background:#fff3e0; color:#ef6c00; border-color:#ffe0b2; cursor:pointer;">Edit</button>
                                         <button class="tag" style="background:#ffebee; color:#c62828; border-color:#ffcdd2; cursor:pointer;">Delete</button>
                                     </td>
                                 </tr>
@@ -63,7 +62,7 @@
                     </tbody>
                 </table>
             <% } else { %>
-                <p>No data found. <a href="/dynamic/add">Add New Item</a></p>
+                <p>No data found. <a href="/dynamic/add">Start adding data</a></p>
             <% } %>
         </div>
     </main>
