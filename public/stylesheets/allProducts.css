@@ -360,3 +360,14 @@ td.loss,
     border-collapse: collapse;
     min-width: 900px; /* Is se kam width par scroll bar aa jaye ga */
   }
+
+
+  .stock-red {
+  color: red;
+  font-weight: bold;
+}
+
+.stock-green {
+  color: green;
+  font-weight: bold;
+}

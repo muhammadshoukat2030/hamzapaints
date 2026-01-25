@@ -2,6 +2,7 @@ import express from 'express';
 import Product from "../models/Product.js";
 import Sale from "../models/Sale.js";
 import Item from '../models/Item.js';
+import ItemDefinition from "../models/ItemDefinition.js";
 import { isLoggedIn } from "../middleware/isLoggedIn.js";
 import { allowRoles } from "../middleware/allowRoles.js";
 import moment from 'moment-timezone'; // 🟢 Library Import
@@ -14,17 +15,20 @@ const router = express.Router();
    -> Renders the Add Product form (EJS)
 ================================ */
 // 🟢 Add Product Page (GET)
-router.get("/add",isLoggedIn,allowRoles("admin", "worker"), async (req, res) => {
-  const role=req.user.role;
-  try {
-   const products = await Product.find().sort({ itemName: 1 }); // Fetch existing products
-   res.render("addProduct", { products, layout: false ,role});
+router.get("/add", isLoggedIn, allowRoles("admin", "worker"), async (req, res) => {
+    const role = req.user.role;
+    try {
+        // 🟢 Database se sara dynamic data fetch karein
+        const definitions = await ItemDefinition.find().sort({ brandName: 1 });
+        const products = await Product.find().sort({ itemName: 1 });
 
+        // 'definitions' ko frontend par bhej dein
+        res.render("addProduct", { products, definitions, layout: false, role });
 
-  } catch (err) {
-    console.error("❌ Error loading Add Product page:", err);
-    res.status(500).send("Error loading Add Product page");
-  }
+    } catch (err) {
+        console.error("❌ Error loading Add Product page:", err);
+        res.status(500).send("Error loading Add Product page");
+    }
 });
 
 
@@ -82,25 +86,24 @@ function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-// 🟢 ALL PRODUCTS ROUTE (Updated)
+// 🟢 ALL PRODUCTS ROUTE (Corrected Model Name)
 router.get("/all", isLoggedIn, allowRoles("admin", "worker"), async (req, res) => {
     const role = req.user.role;
 
     try {
         let { filter, from, to, brand, itemName, colourName, unit, stockStatus, refund } = req.query;
 
-        // 🟢 UPDATE: Agar pehli baar page khulay to default "month" set ho
-        if (!filter) {
-            filter = "month";
-        }
+        // 🟢 FIX: ItemDefinition use karein kyunke upar isi naam se import hai
+        const definitions = await ItemDefinition.find({}).lean();
+
+        if (!filter) { filter = "month"; }
 
         let query = {};
         let start, end;
-        let dateOperator = '$lte'; // Default operator
-
+        let dateOperator = '$lte';
         const nowPKT = moment().tz(PKT_TIMEZONE);
 
-        // --- Accurate Date Logic ---
+        // --- Date Logic ---
         if (filter === "today") {
             start = nowPKT.clone().startOf('day').toDate();
             end = nowPKT.clone().endOf('day').toDate();
@@ -109,7 +112,6 @@ router.get("/all", isLoggedIn, allowRoles("admin", "worker"), async (req, res) =
             start = yesterday.startOf('day').toDate();
             end = yesterday.endOf('day').toDate();
         } else if (filter === "month") {
-            // 🟢 Default logic for "This Month"
             start = nowPKT.clone().startOf('month').toDate();
             end = nowPKT.clone().endOf('day').toDate();
         } else if (filter === "lastMonth") {
@@ -121,68 +123,43 @@ router.get("/all", isLoggedIn, allowRoles("admin", "worker"), async (req, res) =
             const f = moment.tz(from, 'YYYY-MM-DD', PKT_TIMEZONE);
             let t = moment.tz(to, 'YYYY-MM-DD', PKT_TIMEZONE);
             t.add(1, 'days').startOf('day');
-
             if (f.isValid() && t.isValid()) {
                 start = f.startOf('day').toDate();
                 end = t.toDate();
             }
         }
 
-        // Date filter application
         if (start && end) {
             query.createdAt = { $gte: start, [dateOperator]: end };
         }
 
-        // --- Brand filter ---
+        // --- Filters Logic ---
         if (brand && brand !== "all") {
-            if (brand === "Weldon Paints") query.brandName = /^Weldon Paints$/i;
-            else if (brand === "Sparco Paints") query.brandName = /^Sparco Paints$/i;
-            else if (brand === "Value Paints") query.brandName = /^Value Paints$/i;
-            else if (brand === "Corona Paints") query.brandName = /^Corona Paints$/i;
-            else query.brandName = /Other Paints|Other/i;
+            query.brandName = new RegExp(`^${escapeRegExp(brand)}$`, "i");
         }
-
-        // --- Item filter ---
         if (itemName && itemName !== "all") {
-            const knownNames = ["Weather Shield", "Emulsion", "Enamel"];
-            if (itemName === "Other") {
-                query.itemName = { $nin: knownNames };
-            } else {
-                query.itemName = new RegExp(`^${escapeRegExp(itemName)}$`, "i");
-            }
+            query.itemName = new RegExp(`^${escapeRegExp(itemName)}$`, "i");
         }
-
-        // --- Colour filter ---
         if (colourName && colourName !== "all") {
             query.colourName = new RegExp(`^${escapeRegExp(colourName)}$`, "i");
         }
-
-        // --- Unit filter ---
         if (unit && unit !== "all") {
             query.qty = new RegExp(escapeRegExp(unit), "i");
         }
-
-        // --- Stock status ---
         if (stockStatus && stockStatus !== "all") {
             query.remaining = stockStatus === "in" ? { $gt: 0 } : { $eq: 0 };
         }
+        if (refund && refund !== "all") {
+            if (refund === "both") {
+                query.refundStatus = { $in: ["Partially Refunded", "Fully Refunded"] };
+            } else {
+                query.refundStatus = refund;
+            }
+        }
 
-        // --- Refund status ---
-     // Refund Filter Logic
-if (refund && refund !== "all") {
-    if (refund === "both") {
-        // Agar 'both' select kiya hai to Partially aur Fully dono ko dhundo
-        query.refundStatus = { $in: ["Partially Refunded", "Fully Refunded"] };
-    } else {
-        // Agar koi specific status select kiya hai (none, Partially, ya Fully)
-        query.refundStatus = refund;
-    }
-}
-
-        // --- Fetch with Lean (Fast Speed) ---
         const filteredProducts = await Product.find(query).sort({ createdAt: -1 }).lean();
 
-        // --- Accurate Stats Calculation ---
+        // --- Stats Calculation ---
         let totalStock = 0, totalRemaining = 0, totalValue = 0, remainingValue = 0, totalRefundedValue = 0;
         
         filteredProducts.forEach(p => {
@@ -200,6 +177,7 @@ if (refund && refund !== "all") {
 
         const responseData = {
             products: filteredProducts,
+            definitions, 
             stats: { 
                 totalStock, 
                 totalRemaining, 
@@ -217,7 +195,6 @@ if (refund && refund !== "all") {
             role
         };
 
-        // AJAX Support (XMLHttpRequest)
         if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
             return res.json({ success: true, ...responseData });
         }

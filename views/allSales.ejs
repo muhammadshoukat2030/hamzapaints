@@ -1,14 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <title>All Sales | Hamza Paints</title>
   <link rel="icon" href="/images/weldon-paints-logo.png" type="image/png">
   <link rel="stylesheet" href="/stylesheets/allSales.css">
-
 </head>
-
 <body>
   <%- include('partials/navbar') %>
 
@@ -25,34 +22,32 @@
         <option value="custom" <%= filter === 'custom' ? 'selected' : '' %>>Custom Range</option>
       </select>
 
-      <select name="brand" id="brandFilter" data-value="<%= selectedBrand || 'all' %>">
+      <select name="brand" id="brandFilter">
         <option value="all">All Brands</option>
-        <option value="Weldon Paints">Weldon Paints</option>
-        <option value="Sparco Paints">Sparco Paints</option>
-        <option value="Value Paints">Value Paints</option>
-        <option value="Corona Paints">Corona Paints</option>
-        <option value="Other Paints">Other Paints</option>
+        <% definitions.forEach(def => { %>
+          <option value="<%= def.brandName %>" <%= selectedBrand === def.brandName ? 'selected' : '' %>><%= def.brandName %></option>
+        <% }) %>
       </select>
 
-      <select name="itemName" id="itemNameFilter" data-value="<%= selectedItem || 'all' %>">
+      <select name="itemName" id="itemNameFilter" data-selected="<%= selectedItem %>">
         <option value="all">All Items</option>
       </select>
 
-      <select name="colourName" id="colourNameFilter" data-value="<%= selectedColour || 'all' %>">
+      <select name="colourName" id="colourNameFilter" data-selected="<%= selectedColour %>">
         <option value="all">All Colours</option>
       </select>
 
-      <select name="unit" id="unitFilter" data-value="<%= selectedUnit || 'all' %>">
+      <select name="unit" id="unitFilter" data-selected="<%= selectedUnit %>">
         <option value="all">All Units</option>
       </select>
 
-    <select name="refund" id="refundFilter" data-value="<%= selectedRefund || 'all' %>">
-     <option value="all" <%= selectedRefund === 'all' ? 'selected' : '' %>>All Status</option>
-     <option value="none" <%= selectedRefund === 'none' ? 'selected' : '' %>>Not Refunded</option>
-     <option value="both" <%= selectedRefund === 'both' ? 'selected' : '' %>>Both (Partial & Full)</option>
-     <option value="Partially Refunded" <%= selectedRefund === 'Partially Refunded' ? 'selected' : '' %>>Partially Refunded</option>
-    <option value="Fully Refunded" <%= selectedRefund === 'Fully Refunded' ? 'selected' : '' %>>Fully Refunded</option>
-    </select>
+      <select name="refund" id="refundFilter">
+        <option value="all" <%= selectedRefund === 'all' ? 'selected' : '' %>>All Status</option>
+        <option value="none" <%= selectedRefund === 'none' ? 'selected' : '' %>>Not Refunded</option>
+        <option value="both" <%= selectedRefund === 'both' ? 'selected' : '' %>>Both (Partial & Full)</option>
+        <option value="Partially Refunded" <%= selectedRefund === 'Partially Refunded' ? 'selected' : '' %>>Partially Refunded</option>
+        <option value="Fully Refunded" <%= selectedRefund === 'Fully Refunded' ? 'selected' : '' %>>Fully Refunded</option>
+      </select>
 
       <input type="date" name="from" id="from" value="<%= from || '' %>" style="display:none;">
       <input type="date" name="to" id="to" value="<%= to || '' %>" style="display:none;">
@@ -83,7 +78,7 @@
     </div>
 
     <div class="table-container" id="tableContainer">
-      <div id="table-loader">
+      <div id="table-loader" style="display: none;">
         <div class="spinner"></div>
         <p style="margin-top:10px; color:#06A56C; font-weight: bold;">Updating...</p>
       </div>
@@ -133,7 +128,7 @@
                   </small>
                 </td>
                 <td>
-                  <button class="delete-sale delete-btn" data-id="<%= s._id %>" id="delete" >Delete</button>
+                  <button class="delete-sale delete-btn" data-id="<%= s._id %>" id="delete">Delete</button>
                 </td>
               </tr>
             <% }) %>
@@ -142,11 +137,8 @@
       </table>
     </div>
 
+    <div id="db-data-provider" data-definitions='<%= JSON.stringify(definitions) %>' style="display: none;"></div>
     <script src="/javascripts/allSales.js"></script>
   </main>
 </body>
-
 </html>
-
-
-
