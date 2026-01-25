@@ -4,6 +4,7 @@ import Sale from "../models/Sale.js";
 import Agent from '../models/Agent.js';
 import PrintSale from '../models/PrintSale.js'
 import Item from '../models/Item.js';
+import ItemDefinition from "../models/ItemDefinition.js";
 import { isLoggedIn } from "../middleware/isLoggedIn.js";
 import { allowRoles } from "../middleware/allowRoles.js";
 import moment from 'moment-timezone';
@@ -30,9 +31,6 @@ router.get("/add",isLoggedIn,allowRoles("admin", "worker"), async (req, res) => 
     res.status(500).send("Error loading Add Sale page");
   }
 });
-
-
-
 
 
 /* ================================
@@ -153,8 +151,7 @@ router.post("/add", isLoggedIn, allowRoles("admin", "worker"), async (req, res) 
    🟢 3️⃣ All Sales Page (GET)
    ✅ Includes Total Stats
 ================================ */
-// PKT Time Zone Identifier
-// PKT Time Zone Identifier
+
 // PKT Time Zone Identifier
 const PKT_TIMEZONE = 'Asia/Karachi';
 
@@ -163,125 +160,79 @@ function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-router.get("/all", isLoggedIn, allowRoles("admin"), async (req, res) => {
+router.get("/all", isLoggedIn, allowRoles("admin", "worker"), async (req, res) => {
     const role = req.user.role;
     try {
-        // 🟢 DEFAULT FILTER: Agar koi filter na ho to 'month' auto-select hoga
         let { filter = 'month', from, to, brand, itemName, colourName, unit, refund } = req.query;
         
+        // 🟢 Fetch Definitions for Dynamic Dropdowns
+        const definitions = await ItemDefinition.find({}).lean();
+
         let query = {};
         let start, end;
         let dateOperator = '$lte'; 
-
         const nowPKT = moment().tz(PKT_TIMEZONE);
         
-        // 🟢 Date Logic with Default 'month' behavior
-        if (filter === "today" || filter === "yesterday" || filter === "month" || filter === "lastMonth") {
-            if (filter === "today") {
-                start = nowPKT.clone().startOf('day').toDate();
-                end = nowPKT.clone().endOf('day').toDate();
-            } else if (filter === "yesterday") {
-                const yesterdayPKT = nowPKT.clone().subtract(1, 'days');
-                start = yesterdayPKT.startOf('day').toDate();
-                end = yesterdayPKT.endOf('day').toDate();
-            } else if (filter === "month") {
-                // This Month logic
-                start = nowPKT.clone().startOf('month').toDate();
-                end = nowPKT.clone().endOf('day').toDate(); 
-            } else if (filter === "lastMonth") {
-                const lastMonthPKT = nowPKT.clone().subtract(1, 'months');
-                start = lastMonthPKT.startOf('month').toDate();
-                end = lastMonthPKT.endOf('month').toDate();
-            }
+        // --- Date Logic ---
+        if (filter === "today") {
+            start = nowPKT.clone().startOf('day').toDate();
+            end = nowPKT.clone().endOf('day').toDate();
+        } else if (filter === "yesterday") {
+            const yesterdayPKT = nowPKT.clone().subtract(1, 'days');
+            start = yesterdayPKT.startOf('day').toDate();
+            end = yesterdayPKT.endOf('day').toDate();
+        } else if (filter === "month") {
+            start = nowPKT.clone().startOf('month').toDate();
+            end = nowPKT.clone().endOf('day').toDate(); 
+        } else if (filter === "lastMonth") {
+            const lastMonthPKT = nowPKT.clone().subtract(1, 'months');
+            start = lastMonthPKT.startOf('month').toDate();
+            end = lastMonthPKT.endOf('month').toDate();
         } else if (filter === "custom" && from && to) {
             dateOperator = '$lt'; 
             const f = moment.tz(from, 'YYYY-MM-DD', PKT_TIMEZONE);
             let t = moment.tz(to, 'YYYY-MM-DD', PKT_TIMEZONE);
-            
             t.add(1, 'days').startOf('day'); 
-            
             if (f.isValid() && t.isValid()) {
                 start = f.startOf('day').toDate();
                 end = t.toDate(); 
             }
         }
         
-        // Apply date query if start/end exists
-        if (start && end) {
-            query.createdAt = { $gte: start, [dateOperator]: end };
+        if (start && end) query.createdAt = { $gte: start, [dateOperator]: end };
+
+        // 🟢 Filters (Dynamic Regular Expression)
+        if (brand && brand !== "all") query.brandName = new RegExp(`^${escapeRegExp(brand)}$`, "i");
+        if (itemName && itemName !== "all") query.itemName = new RegExp(`^${escapeRegExp(itemName)}$`, "i");
+        if (colourName && colourName !== "all") query.colourName = new RegExp(`^${escapeRegExp(colourName)}$`, "i");
+        if (unit && unit !== "all") query.qty = new RegExp(escapeRegExp(unit), "i");
+        if (refund && refund !== "all") {
+            query.refundStatus = refund === "both" ? { $in: ["Partially Refunded", "Fully Refunded"] } : refund;
         }
 
-        // 🟢 Brand Filters
-        if (brand && brand !== "all") {
-            if (brand === "Weldon Paints") query.brandName = /weldon/i;
-            else if (brand === "Sparco Paints") query.brandName = /sparco/i;
-            else if (brand === "Value Paints") query.brandName = /value/i;
-            else if (brand === "Corona Paints") query.brandName = /Corona/i;
-            else if (brand === "Other Paints") query.brandName = /Other Paints|Other/i;
-        }
-
-        // 🟢 Item Name Filter
-        if (itemName && itemName !== "all") {
-            const knownNames = ["Weather Shield", "Emulsion", "Enamel"];
-            if (itemName === "Other") query.itemName = { $nin: knownNames };
-            else query.itemName = new RegExp(`^${escapeRegExp(itemName)}$`, "i");
-        }
-
-        // 🟢 Colour Filter
-        if (colourName && colourName !== "all") {
-            query.colourName = new RegExp(`^${escapeRegExp(colourName)}$`, "i");
-        }
-
-        // 🟢 Unit/Qty Filter
-        if (unit && unit !== "all") {
-            query.qty = new RegExp(escapeRegExp(unit), "i");
-        }
-
-        // 🟢 Refund Filter
-       // Sale Refund Filter Logic
-if (refund && refund !== "all") {
-    if (refund === "both") {
-        // Dono refunded status ko filter mein shamil karein
-        query.refundStatus = { $in: ["Partially Refunded", "Fully Refunded"] };
-    } else {
-        // Normal filter (none, Partially, ya Fully)
-        query.refundStatus = refund;
-    }
-}
-
-        // 🟢 Data Fetching (Optimized)
+        // 🟢 Data Fetching
         const filteredSales = await Sale.find(query).sort({ createdAt: -1 }).lean();
         const allProducts = await Product.find({}, 'stockID rate').lean();
         
         const productMap = {};
-        allProducts.forEach(p => {
-            productMap[p.stockID] = parseFloat(p.rate || 0);
-        });
+        allProducts.forEach(p => productMap[p.stockID] = parseFloat(p.rate || 0));
 
         let totalSold = 0, totalRevenue = 0, totalProfit = 0, totalLoss = 0, totalRefunded = 0;
-        const enrichedSales = [];
-
-        for (const s of filteredSales) {
-            const purchaseRate = productMap[s.stockID] || 0;
-           
-            // ✅ Ab ye sirf total sold quantity dikhayega, chahe refund hui ho ya nahi
-            let netSoldQty = s.quantitySold || 0;
-            
+        const enrichedSales = filteredSales.map(s => {
+            const netSoldQty = s.quantitySold || 0;
             totalSold += netSoldQty;
             totalRevenue += (netSoldQty * (s.rate || 0));
             totalRefunded += ((s.refundQuantity || 0) * (s.rate || 0));
 
-            const saleProfit = s.profit;
-            if (saleProfit > 0) totalProfit += saleProfit;
-            else totalLoss += Math.abs(saleProfit);
+            if (s.profit > 0) totalProfit += s.profit;
+            else totalLoss += Math.abs(s.profit);
 
-            // Row level profit calculation for frontend display
-            const rowProfit = parseFloat(saleProfit.toFixed(2));
-            enrichedSales.push({ ...s, purchaseRate, profit: rowProfit });
-        }
+            return { ...s, profit: parseFloat(s.profit.toFixed(2)) };
+        });
 
         const responseData = {
             sales: enrichedSales,
+            definitions, // Pass definitions to EJS
             stats: { 
                 totalSold, 
                 totalRevenue: parseFloat(totalRevenue.toFixed(2)), 
@@ -289,10 +240,7 @@ if (refund && refund !== "all") {
                 totalLoss: parseFloat(totalLoss.toFixed(2)), 
                 totalRefunded: parseFloat(totalRefunded.toFixed(2)) 
             },
-            role, 
-            filter, 
-            from, 
-            to,
+            role, filter, from, to,
             selectedBrand: brand || "all",
             selectedItem: itemName || "all",
             selectedColour: colourName || "all",
@@ -300,12 +248,10 @@ if (refund && refund !== "all") {
             selectedRefund: refund || "all"
         };
 
-        // 🟢 Handle AJAX and Regular Request
-        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+        if (req.xhr || (req.headers.accept && req.headers.accept.indexOf('json') > -1)) {
             return res.json({ success: true, ...responseData });
         }
         res.render("allSales", responseData);
-
     } catch (err) {
         console.error("❌ Sales Route Error:", err);
         res.status(500).send("Server Error");

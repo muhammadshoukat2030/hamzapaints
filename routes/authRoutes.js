@@ -254,55 +254,67 @@ res.render("2FA");
 
 
 // VERIFY OTP
-router.post("/verify-otp",ensure2FA, async (req, res) => {
+router.post("/verify-otp", ensure2FA, async (req, res) => {
   try {
     const { otp } = req.body;
+
+    // 1. Validation: OTP khali na ho
     if (!otp) {
       return res.status(400).json({ success: false, message: "OTP is required!" });
     }
 
-    // Find user with matching OTP and valid expiry
+    // 2. CastError Fix: Check karein ke OTP sirf numbers hain
+    const otpNumber = Number(otp);
+    if (isNaN(otpNumber)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid OTP format! Please enter numbers only." 
+      });
+    }
+
+    // 3. Find user with matching OTP and valid expiry
+    // Hum otpNumber use kar rahe hain taake database crash na ho
     const user = await Admin.findOne({
-      otp: otp,
-      otpExpires: { $gt: Date.now() } // OTP not expired
+      otp: otpNumber, 
+      otpExpires: { $gt: Date.now() } // OTP expired na ho
     });
 
     if (!user) {
       return res.status(400).json({ success: false, message: "Invalid or expired OTP!" });
     }
 
-    // OTP is correct → Clear OTP fields
+    // 4. Success: OTP correct hai → Clear OTP fields
     user.otp = null;
     user.otpExpires = null;
     await user.save();
-   
-    // 🔥 Remove connect.sid cookie
+    
+    // 5. 🔥 Destroy Temporary Session (Security)
     req.session.destroy(err => {
       if (err) console.error("Session destroy error:", err);
     });
 
-    // 🔥 Remove connect.sid cookie
+    // 6. 🔥 Remove temporary session cookie
     res.clearCookie("connect.sid");
 
-
-    // CREATE JWT TOKEN (session)
+    // 7. CREATE JWT TOKEN (Final Auth)
     const token = jwt.sign(
       { id: user._id, username: user.username, role: user.role },
       process.env.SECRET_KEY,
       { expiresIn: "365d" }
     );
 
+    // 8. Set Cookie with Production/Live checks
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production", // Live (Railway/Vercel) par true hoga
       sameSite: "strict",
-      maxAge: 365 * 24 * 60 * 60 * 1000 // 1 year in milliseconds
+      maxAge: 365 * 24 * 60 * 60 * 1000 // 1 year
     });
 
     return res.json({ success: true, message: "OTP verified successfully!" });
 
   } catch (err) {
-    console.error(err);
+    console.error("Verification API Error:", err);
     return res.status(500).json({ success: false, message: "Server error. Try again!" });
   }
 });

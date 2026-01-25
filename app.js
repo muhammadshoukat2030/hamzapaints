@@ -16,6 +16,7 @@ import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import saleRoutes from "./routes/saleRoutes.js";
 import agentRoutes from "./routes/agentRoutes.js";
+import dynamicRoutes from "./routes/dynamicRoutes.js";
 
 // Middlewares
 import { isLoggedIn } from "./middleware/isLoggedIn.js";
@@ -68,7 +69,7 @@ app.use(
 // Allowed origins
 
 const allowedOrigins = process.env.NODE_ENV === "production"
-  ? ["https://hamzapaints.vercel.app"]   // Add your production domain(s) here
+  ? ["https://paintsstore.vercel.app"]   // Add your production domain(s) here
   : ["http://localhost:3000"];           // Localhost for dev
 
 // ===== CORS Middleware =====
@@ -144,6 +145,8 @@ app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
 app.use("/sales", saleRoutes);
 app.use("/agents", agentRoutes);
+app.use("/dynamic", dynamicRoutes);
+
 
 app.get("/", (req, res) => res.redirect("/auth/login"));
 

@@ -1,530 +1,228 @@
-// ====================== BRAND-WISE ITEMS =========================
-const brandItems = {
-  "Weldon Paints": [
-    "Weather Shield", "Emulsion", "Enamel", "Betek Emulsion", "Betek Wall Putty",
-    "Wall Putty", "Metallic", "Under Coat", "Red Oxide Primer", "Varnish",
-    "ELFY Varnish", "Lacquer", "Sealer", "Fish", "Exterior Wall Putty",
-    "Exterior Primer", "Interior Primer", "Local Primer", "Godka Emulsion",
-    "Godka Wall Putty", "Local Enamel", "Thinir"
-  ],
-  "Sparco Paints": [
-    "Emulsion", "Wall Putty", "Dream Emulsion", "Weather Shield", "Enamel",
-    "Under Coad", "Red Oxide Primer", "Exterior Primer",
-    "Exterior Wall Putty", "Dream Wall Putty"
-  ],
-  "Value Paints": [
-    "Supreme Emulsion", "Supreme Wall Putty", "Prime Emulsion", "P.Weather Shield",
-    "Metallic", "Interior Primer", "Peak Wall Putty", "Peak Primer",
-    "Enamel", "Value Enamel", "Value Interior Primer", "Ext Primer",
-    "Value Weather Shield", "Value Prime Emulsion", "Primer Weather Shield",
-    "Value Under Coad", "Value Red Oxide Primer"
-  ],
-  "Corona Paints": [
-    "Emulsion", "Primer", "Wall Putty", "Exterior Primer", "Enamel"
-  ],
-  "Other Paints": [
-    "Oil Tupe", "Paints SPRAY", "WALL PUTTY", "GODKA WALLPUTTY", "EMULSION", "GODKA EMULSION", "ENAMEL", "PEARL PASTE 1000G", "PEARL PASTE 500G", "PEARL PASTE 100G", "MASKAN TAPE 2",
-    "MASKAN TAPE 1", "MASKAN TAPE 1/2", "MASKAN TAPE 2 SOTTER", "MASKAN TAPE 1 SOTTER",
-    "BRUSH EMULSION 6", "BRUSH EMULSION 5", "BRUSH EMULSION 4", "BRUSH TIGER PAINT 4",
-    "BRUSH TIGER PAINT 3", "BRUSH TIGER PAINT 2 Double", "BRUSH TIGER PAINT 2 Single",
-    "BRUSH TIGER PAINT 1 Double", "BRUSH TIGER PAINT 1 Single", "MARSHAL BRUSH 3",
-    "COMMANDER BURSH 2", "CAPTAN BRUSH 4", "CAPTAN BRUSH 3 Double", "CAPTAN BRUSH 2 Double",
-    "CAPTAN BRUSH 2 Single", "ROBINA QALAM", "WHITE QALAM", "STENSEL", "STENSEL BOADER", "CHAPA", "BOADE CHAPA", "CAPTAN BRUSH 3 SINGLE",
-    "MATTI OIL 1500G", "MATTI OIL 1000G", "MATTI OIL 900G", "MATTI OIL DAMIND",
-    "MATTI OIL 500G", "MATTI OIL 250G", "MATTI OIL 300G", "RAGMAL ADDID", "RAGMAL ROLLE", "RAGMAL FUFF", "RAGMAL KERMALA", "COMMANDER ROLLER",
-    "SADA ROLLER", "ROLA STAKE", "ROLLER 4", "ROLLA PUFF 4", "ROLLA PUFF ADDID", "BALCAK ROLLER", "BLACAK ROLLA PUFF 8", "NEEL PKT 100G",
-    "NEEL PKT 40G", "NEEL", "CHAK MATTI KG", "PARIS", "GLUE 1KG", "GLUE 1/2 KG", "GLUE DABBI", "NOBLE GLUE", "ACRYLIC 1 KG",
-    "ACRYLIC 1/2 KG", "DIKOO SET", "MITTI OIL SMALL", "SAMAD BOND DABBI", "OIL TUBE ADDID", "CAHILLANGER ADDID",
-    "SPRAY MUBAH", "SPRAY STEEL", "SPRAY GOLDEN", "SPRAY ZANG", "MAGIC", "SCRAPER 8", "SCRAPER 4", "SCRAPER SAFAYE",
-    "PATRA", "TURKEY UMBER", "YELLOW UMBER", "R/O UMBER", "BLACK UMBER", "CHOONA", "FARMKEA GANKE", "MALMAL",
-    "Tinter Tube", "Challanger Tube", "Samad Bond Tube", "Sycle Pump", "Sycle", "Hickory", "20KG H.D Putty",
-    "5KG H.D Putty", "5KG Wallcoat", "White Cement", "Lakdana", "Chamky",
-  ]
-};
-
-// ====================== BRAND-WISE UNITS =========================
-
-const brandUnits = {
-  "Weldon Paints": ["Gallons", "Quarters", "Drumi", "Dabbi"],
-  "Sparco Paints": ["Gallons", "Quarters", "Drumi", "Dabbi"],
-  "Value Paints": ["Gallons", "Quarters", "Drumi", "Dabbi"],
-  "Corona Paints": ["Gallons", "Quarters", "Drumi", "Dabbi", "Ponts"],
-  "Other Paints": ["Gallons", "Quarters", "Drumi", "Dabbi"]
-};
-
-// ===================== COLOURS FOR SELECT ITEMS + BRAND ONLY ==============
-
-const productOptions = {
-  "Weldon Paints-Weather Shield": [
-    { code: "1951", colour: "White" },
-    { code: "1952", colour: "Off White" },
-    { code: "7030", colour: "Apricot" },
-    { code: "1948", colour: "Sugar Cane" },
-    { code: "7090", colour: "Pearl" },
-    { code: "7001", colour: "Soft White" },
-    { code: "2685", colour: "Cameo" },
-    { code: "2087", colour: "Beige" },
-    { code: "7051", colour: "Milk Mocha" },
-    { code: "7003", colour: "Peach Dream" },
-    { code: "7049", colour: "Desert Dawn" },
-    { code: "8310", colour: "Weldon Beige" },
-    { code: "1958", colour: "Tea Rose" },
-    { code: "7077", colour: "Golden Tinge" },
-    { code: "6860", colour: "Sweet Peach" },
-    { code: "8329", colour: "Hopsack" },
-    { code: "1960", colour: "Moon Land" },
-    { code: "5270", colour: "Fresh Orange" },
-    { code: "7048", colour: "Molten Bronze" },
-    { code: "2876", colour: "Tile Red" },
-    { code: "8317", colour: "Beaver" },
-    { code: "8323", colour: "Silk Stone" },
-    { code: "8328", colour: "Porcelain Peach" },
-    { code: "1919", colour: "Ash White" },
-    { code: "7034", colour: "Bubble Pink" },
-    { code: "7080", colour: "Sea Sand" },
-    { code: "7055", colour: "Royal Cameo" },
-    { code: "7004", colour: "Lilac Grey" },
-    { code: "7073", colour: "Barbie Pink" },
-    { code: "8303", colour: "New Ash White" },
-    { code: "7044", colour: "Evening Blush" },
-    { code: "3162", colour: "Weldon Grey" },
-    { code: "6846", colour: "Blue Grey" },
-    { code: "3148", colour: "Terracotta" },
-    { code: "1949", colour: "Sandstone" },
-    { code: "3160", colour: "Sky Grey" },
-    { code: "3158", colour: "Blue Wind" },
-    { code: "2910", colour: "Red Oxide" },
-    { code: "2877", colour: "Weldon Red" },
-    { code: "1959", colour: "Goose Wing" },
-    { code: "3032", colour: "Happy Blue" },
-    { code: "7072", colour: "Crystal Green" },
-    { code: "7082", colour: "Camel Brown (New)" },
-    { code: "2090", colour: "Jade" },
-    { code: "1947", colour: "Magnolia" },
-    { code: "1426", colour: "W.Cannon" },
-    { code: "7040", colour: "Cherry Pink" },
-    { code: "7017", colour: "Charcoal" },
-    { code: "8325", colour: "Royal Beige" },
-    { code: "3023", colour: "New Jade" },
-    { code: "7032", colour: "Brown Bronze" },
-    { code: "7054", colour: "Black Magic" },
-    { code: "2885", colour: "Autumn Stone" },
-    { code: "7042", colour: "Frost Mauve" },
-    { code: "8300", colour: "Black (New)" },
-    { code: "2728", colour: "Bright Red" },
-    { code: "7020", colour: "Habitat" },
-
-    { code: "2088", colour: "Avocado" },
-    { code: "7056", colour: "Expresso (New)" },
-    { code: "6853", colour: "Green Yellow" },
-  ],
-  "Weldon Paints-Emulsion": [
-    { code: "0", colour: "White" },
-    { code: "10", colour: "Off White" },
-    { code: "43", colour: "Kitten White" },
-    { code: "97", colour: "Rose White" },
-    { code: "84", colour: "Peanut Butter" },
-    { code: "58", colour: "Light Orange" },
-    { code: "4026", colour: "New Off White" },
-    { code: "106", colour: "Purple Dawn" },
-    { code: "8", colour: "Cream" },
-    { code: "88", colour: "Cameo" },
-    { code: "94", colour: "Orange" },
-    { code: "103", colour: "Smart Off White (New)" },
-    { code: "46", colour: "Orchid White" },
-    { code: "40", colour: "Autumn Stone" },
-    { code: "93", colour: "Lemon" },
-    { code: "4006", colour: "New Tile Red" },
-    { code: "83", colour: "Texas Cream" },
-    { code: "110", colour: "Puff" },
-    { code: "41", colour: "Soft Beige" },
-    { code: "113", colour: "Dark Desert" },
-    { code: "70", colour: "Tile Red" },
-    { code: "78", colour: "Cockleshell" },
-    { code: "5", colour: "Pink" },
-    { code: "95", colour: "Opal Lilac" },
-    { code: "75", colour: "Stardust" },
-    { code: "104", colour: "Cool White (New)" },
-    { code: "71", colour: "Sandstone" },
-    { code: "21", colour: "Blossom Pink" },
-    { code: "112", colour: "Classical" },
-    { code: "22", colour: "Sea Blue" },
-    { code: "101", colour: "Swiss Grey (New)" },
-    { code: "23", colour: "Tea Rose" },
-    { code: "111", colour: "Dark Pink" },
-    { code: "74", colour: "Moods" },
-    { code: "109", colour: "Torres Blue" },
-    { code: "19", colour: "Ash White" },
-    { code: "89", colour: "Terracotta" },
-    { code: "49", colour: "Bright Pink" },
-    { code: "92", colour: "Violet" },
-    { code: "25", colour: "Blue Heaven" },
-    { code: "47", colour: "Badami" },
-    { code: "6", colour: "Spice" },
-    { code: "105", colour: "Barble Pink" },
-    { code: "96", colour: "Bringal" },
-    { code: "91", colour: "Deep Blue" },
-    { code: "519", colour: "Weldon Ash White" },
-    { code: "01", colour: "Soft White" },
-    { code: "18", colour: "Grey Blue" },
-    { code: "50", colour: "Apple White" },
-    { code: "30", colour: "Crystal Green" },
-    { code: "44", colour: "Brown Tint" },
-    { code: "76", colour: "Lavender White" },
-    { code: "20", colour: "Whisper" },
-    { code: "26", colour: "Lime Fresh" },
-    { code: "27", colour: "Emerald" },
-    { code: "42", colour: "Almond" },
-    { code: "48", colour: "French Grey" },
-    { code: "34", colour: "Steel Grey" },
-    { code: "79", colour: "Lime Grapes" },
-    { code: "28", colour: "Apple Green" },
-    { code: "45", colour: "Toasted Almond" },
-
-
-
-    { code: "102", colour: "Golf Green (New)" },
-    { code: "36", colour: "Spring Leaf" },
-    { code: "72", colour: "Jonquil" },
-    { code: "90", colour: "Jade" },
-  ],
-  "Weldon Paints-Enamel": [
-    { code: "241", colour: "Black" },
-    { code: "0", colour: "White" },
-    { code: "222", colour: "Bone White" },
-    { code: "272", colour: "Apricot (New)" },
-    { code: "4022", colour: "Lemon" },
-    { code: "203", colour: "Golden Brown" },
-    { code: "228", colour: "Red Oxide" },
-    { code: "210", colour: "Sky Blue" },
-    { code: "207", colour: "Off White" },
-    { code: "259", colour: "Honey Milk" },
-    { code: "209", colour: "Pearl Beige" },
-    { code: "204", colour: "Dark Brown" },
-    { code: "271", colour: "Polish Brown" },
-    { code: "214", colour: "Light Blue" },
-    { code: "206", colour: "New Off White" },
-    { code: "260", colour: "Sweet Peach" },
-    { code: "233", colour: "Weldon Beige" },
-    { code: "270", colour: "Royal Brown" },
-    { code: "266", colour: "Crimson" },
-    { code: "263", colour: "Corn Flower" },
-    { code: "235", colour: "Kitten White" },
-    { code: "253", colour: "Golden Yellow" },
-    { code: "298", colour: "Cappuccino" },
-    { code: "256", colour: "Chocolate Brown" },
-    { code: "215", colour: "New Brown" },
-    { code: "230", colour: "Vivid Blue" },
-    { code: "201", colour: "County Cream" },
-    { code: "255", colour: "Diyar" },
-    { code: "234", colour: "Coriander" },
-    { code: "237", colour: "Leather Brown" },
-    { code: "205", colour: "Signal Red" },
-    { code: "231", colour: "Middle Blue" },
-    { code: "257", colour: "Early Dawn" },
-    { code: "333", colour: "Light Diyar" },
-    { code: "261", colour: "Desert Dawn" },
-    { code: "273", colour: "Red Brick (New)" },
-    { code: "264", colour: "Hot Pink" },
-    { code: "220", colour: "Pearl Pink" },
-    { code: "217", colour: "Sea Green" },
-    { code: "297", colour: "Antelope" },
-    { code: "213", colour: "Mauve" },
-    { code: "229", colour: "Emerald" },
-    { code: "268", colour: "Light Champagne" },
-    { code: "254", colour: "Lilac" },
-    { code: "267", colour: "Spring Green" },
-    { code: "492", colour: "Smoke Grey" },
-    { code: "269", colour: "New Ash White" },
-    { code: "247", colour: "Weldon Green" },
-    { code: "495", colour: "New Smoke Grey" },
-    { code: "251", colour: "Ash White" },
-    { code: "216", colour: "Ocean Turuoise" },
-    { code: "212", colour: "Court Grey" },
-    { code: "219", colour: "Ash Grey" },
-    { code: "218", colour: "Signal Green" },
-    { code: "211", colour: "Antique Grey" },
-    { code: "252", colour: "Pumice" },
-    { code: "265", colour: "Orange" },
-    { code: "223", colour: "Dark Grey" },
-
-
-    { code: "5112", colour: "Ferozee" },
-    { code: "5113", colour: "Bronze" },
-    { code: "5115", colour: "Weldon Copper" },
-    { code: "5104", colour: "Shiny Green" },
-    { code: "5114", colour: "Red Rose" },
-    { code: "5105", colour: "Champagne" },
-    { code: "5103", colour: "Brown Sheen" },
-    { code: "5106", colour: "Copper" },
-    { code: "5102", colour: "Sparking Silver" },
-    { code: "0401", colour: "Pale Green" },
-    { code: "5107", colour: "Golden Dust" },
-    { code: "5120", colour: "Sea Blue" },
-    { code: "5109", colour: "Brilliant Green" },
-  ],
-  "Other Paints-Oil Tupe": [
-    { code: "106", colour: "White" },
-    { code: "443", colour: "Blue" },
-    { code: "560", colour: "Viridian" },
-    { code: "227", colour: "Yellow" },
-    { code: "794", colour: "Lamp Black" },
-    { code: "313", colour: "Orange Red" },
-    { code: "453", colour: "Cobalt Blue" },
-    { code: "559", colour: "Emerald Green" },
-    { code: "676", colour: "Yellow Ochre" },
-    { code: "302", colour: "Scarlet" },
-    { code: "688", colour: "Raw Umber" },
-    { code: "601", colour: "Raw Siena" },
-    { code: "687", colour: "Burnt Umber" },
-    { code: "215", colour: "Lemon Yellow" },
-    { code: "684", colour: "Burnt Siena" },
-    { code: "336", colour: "Rose" },
-    { code: "402", colour: "Mauve" },
-  ],
-  "Other Paints-Paints SPRAY": [
-    { code: "37", colour: "Onion Green" },
-    { code: "23", colour: "Red" },
-    { code: "39", colour: "Black" },
-    { code: "30", colour: "Pink" },
-    { code: "21", colour: "Vivdid Blue" },
-    { code: "22", colour: "Medium Grey" },
-    { code: "36", colour: "Silver" },
-    { code: "35", colour: "Gold" },
-    { code: "318", colour: "Chrome" },
-    { code: "25", colour: "Yellow" },
-    { code: "15", colour: "Sky Blue" },
-    { code: "40", colour: "white" },
-    { code: "29", colour: "Brown" },
-  ]
-};
-
-// --- DOM Elements ---
-const brandFilter = document.getElementById('brandFilter');
-const itemFilter = document.getElementById('itemNameFilter');
-const colourFilter = document.getElementById('colourNameFilter');
-const unitFilter = document.getElementById('unitFilter');
-const refundFilter = document.getElementById('refundFilter');
-const dateFilter = document.getElementById('filter');
-const fromInput = document.getElementById("from");
-const toInput = document.getElementById("to");
-const applyBtn = document.getElementById('apply');
-const filterForm = document.getElementById('filterForm');
-
-// ===================== AJAX UPDATE FUNCTION =========================
-
-
-async function updateTable() {
-    const formData = new URLSearchParams(new FormData(filterForm)).toString();
-    const tbody = document.querySelector('tbody');
-    const tableContainer = document.getElementById('tableContainer');
-    const loader = document.getElementById('table-loader');
+document.addEventListener('DOMContentLoaded', () => {
+    let dbDefinitions = [];
+    const provider = document.getElementById('db-data-provider');
     
-    // 🟢 1. Loading Start: Show Loader & Blur
-    if (loader) loader.style.display = 'flex';
-    if (tableContainer) tableContainer.classList.add('loading-active');
-    tbody.style.opacity = '0.3';
+    // 1. Load Data
+    if (provider && provider.getAttribute('data-definitions')) {
+        try {
+            dbDefinitions = JSON.parse(provider.getAttribute('data-definitions'));
+            console.log("✅ Data Loaded Successfully");
+        } catch (e) {
+            console.error("❌ Parse Error:", e);
+        }
+    }
 
-    try {
-        const res = await fetch(`/sales/all?${formData}`, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        });
-        const data = await res.json();
+    const brandFilter = document.getElementById('brandFilter');
+    const itemFilter = document.getElementById('itemNameFilter');
+    const colourFilter = document.getElementById('colourNameFilter');
+    const unitFilter = document.getElementById('unitFilter');
+    const filterForm = document.getElementById('filterForm');
 
-        if (data.success) {
-            // 🟢 2. Update Stats Boxes
-            const statsPs = document.querySelectorAll('.stat-box p');
-            if (statsPs.length >= 5) {
-                statsPs[0].innerText = data.stats.totalSold;
-                statsPs[1].innerText = `Rs ${data.stats.totalRevenue.toFixed(2)}`;
-                statsPs[2].innerText = `Rs ${data.stats.totalProfit.toFixed(2)}`;
-                statsPs[3].innerText = `Rs ${data.stats.totalLoss.toFixed(2)}`;
-                statsPs[4].innerText = `Rs ${data.stats.totalRefunded.toFixed(2)}`;
-            }
+    // 2. Dropdown Sync Logic
+    function syncDropdowns(isInitial = false) {
+        const selectedBrand = brandFilter.value;
+        const preItem = itemFilter.getAttribute('data-selected');
+        const preUnit = unitFilter.getAttribute('data-selected');
 
-            // 🟢 3. Build Table Content
-            let html = '';
-            if (data.sales.length === 0) {
-                html = `<tr><td colspan="12" class="no-data">No sales records found.</td></tr>`;
-            } else {
-                data.sales.forEach(s => {
-                    const dateObj = new Date(s.createdAt);
-                    const dateStr = dateObj.toLocaleDateString('en-GB', { 
-                        day: '2-digit', month: 'short', year: 'numeric', 
-                        timeZone: 'Asia/Karachi' 
-                    });
-                    const timeStr = dateObj.toLocaleTimeString('en-GB', { 
-                        hour: '2-digit', minute: '2-digit', hour12: true, 
-                        timeZone: 'Asia/Karachi' 
-                    });
-                    
-                    // Backend se aayi hui profit value use karein
-                    const profitVal = s.profit || 0;
+        itemFilter.innerHTML = '<option value="all">All Items</option>';
+        unitFilter.innerHTML = '<option value="all">All Units</option>';
+        colourFilter.innerHTML = '<option value="all">All Colours</option>';
 
-                    html += `
-                    <tr>
-                        <td>${s.brandName}</td>
-                        <td>${s.itemName}</td>
-                        <td>${s.colourName}</td>
-                        <td>${s.qty}</td>
-                        <td>${s.quantitySold}</td>
-                        <td>Rs ${s.rate.toFixed(2)}</td>
-                        <td>Rs ${(s.quantitySold * s.rate).toFixed(2)}</td>
-                        <td class="${profitVal < 0 ? 'loss' : 'profit'}">Rs ${profitVal.toFixed(2)}</td>
-                        <td class="refund-status">${s.refundStatus || 'none'}</td>
-                        <td class="refund-quantity">${s.refundQuantity || 0}</td>
-                        <td>${dateStr}<br><small style="color: #007bff; font-weight: bold;">${timeStr}</small></td>
-                        ${data.role === "admin" ? `<td><button type="button" class="delete-sale delete-btn" data-id="${s._id}" id="delete" >Delete</button></td>` : ''}
-                    </tr>`;
+        if (selectedBrand === 'all') {
+            itemFilter.disabled = true;
+            unitFilter.disabled = true;
+            colourFilter.disabled = true;
+            return;
+        }
+
+        const data = dbDefinitions.find(d => d.brandName === selectedBrand);
+
+        if (data) {
+            itemFilter.disabled = false;
+            unitFilter.disabled = false;
+
+            // Products
+            if (data.products && Array.isArray(data.products)) {
+                data.products.forEach(prod => {
+                    const name = prod.itemName;
+                    if (name) {
+                        const opt = new Option(name, name);
+                        if (isInitial && name === preItem) opt.selected = true;
+                        itemFilter.add(opt);
+                    }
                 });
             }
-            tbody.innerHTML = html;
-            
-            // 🟢 4. Clean URL: window.history.pushState removed
-            
-            attachDeleteListeners();
+
+            // Units
+            if (data.units && Array.isArray(data.units)) {
+                data.units.forEach(u => {
+                    const opt = new Option(u, u);
+                    if (isInitial && u === preUnit) opt.selected = true;
+                    unitFilter.add(opt);
+                });
+            }
+            syncColours(isInitial);
         }
-    } catch (err) {
-        console.error("❌ AJAX Error:", err);
-    } finally {
-        // 🟢 5. Loading End: Hide Loader
-        if (loader) loader.style.display = 'none';
-        if (tableContainer) tableContainer.classList.remove('loading-active');
-        tbody.style.opacity = '1';
     }
-}
 
-// ===================== DELETE LOGIC =========================
+    function syncColours(isInitial = false) {
+        const selectedBrand = brandFilter.value;
+        const selectedItem = itemFilter.value;
+        const preColor = colourFilter.getAttribute('data-selected');
 
-async function deleteSale(saleId) {
-    if (!confirm("Are you sure you want to delete this sale?")) return;
-    try {
-        const res = await fetch(`/sales/delete-sale/${saleId}`, { method: "DELETE" });
-        const data = await res.json();
-        if (data.success) { 
-            alert(data.message);
-            updateTable(); // Refresh table without page reload
-        } else {
-            alert(data.message || "Failed to delete sale");
-        }
-    } catch (err) { 
-        alert("Error deleting sale"); 
-    }
-}
-
-function attachDeleteListeners() {
-    document.querySelectorAll('.delete-sale').forEach(btn => {
-        btn.onclick = (e) => {
-            e.preventDefault();
-            deleteSale(e.currentTarget.dataset.id);
-        }
-    });
-}
-
-// ===================== FILTER HELPERS =========================
-
-function toggleDateInputs(value) {
-    const isCustom = (value === "custom");
-    fromInput.style.display = isCustom ? "inline-block" : "none";
-    toInput.style.display = isCustom ? "inline-block" : "none";
-    if (applyBtn) applyBtn.style.display = isCustom ? "inline-block" : "none";
-}
-
-// Filter population functions (keep your original logic)
-function populateItemFilter(brand) {
-    const currentVal = itemFilter.dataset.value;
-    itemFilter.innerHTML = '<option value="all">All Items</option>';
-    if (!brand || brand === 'all') { itemFilter.disabled = true; return; }
-    itemFilter.disabled = false;
-    if (typeof brandItems !== 'undefined' && brandItems[brand]) {
-        brandItems[brand].forEach(it => {
-            const o = document.createElement('option');
-            o.value = it; o.textContent = it;
-            if (currentVal === it) o.selected = true;
-            itemFilter.appendChild(o);
-        });
-    }
-}
-
-// ===================== NEW POPULATE FUNCTIONS =========================
-
-// 1. Units dropdown bharne ke liye
-function populateUnitFilter(brand) {
-    unitFilter.innerHTML = '<option value="all">All Units</option>';
-    if (!brand || brand === 'all' || !brandUnits[brand]) {
-        unitFilter.disabled = true;
-        return;
-    }
-    unitFilter.disabled = false;
-    brandUnits[brand].forEach(u => {
-        const o = document.createElement('option');
-        o.value = u; o.textContent = u;
-        unitFilter.appendChild(o);
-    });
-}
-
-// 2. Colours dropdown bharne ke liye
-function populateColourFilter(brand, item) {
-    colourFilter.innerHTML = '<option value="all">All Colours</option>';
-    const key = `${brand}-${item}`;
-    
-    if (!brand || brand === 'all' || !item || item === 'all' || !productOptions[key]) {
-        colourFilter.disabled = true;
-        return;
-    }
-    
-    colourFilter.disabled = false;
-    productOptions[key].forEach(c => {
-        const o = document.createElement('option');
-        // Value hum "Colour (Code: XXX)" format mein rakh rahe hain jaisa aapke table mein hota hai
-        o.value = `${c.colour} (Code: ${c.code})`; 
-        o.textContent = `${c.colour} (Code: ${c.code})`;
-        colourFilter.appendChild(o);
-    });
-}
-
-// ===================== INITIALIZATION (UPDATED) =========================
-
-window.addEventListener('DOMContentLoaded', () => {
-    // Initial Setup on Page Load
-    if (brandFilter) {
-        populateItemFilter(brandFilter.value);
-        populateUnitFilter(brandFilter.value);
-    }
-    toggleDateInputs(dateFilter.value);
-    attachDeleteListeners();
-
-    // Jab Brand badle to Items aur Units dono update hon
-    brandFilter.addEventListener('change', () => {
-        const brand = brandFilter.value;
-        populateItemFilter(brand);
-        populateUnitFilter(brand);
-        // Item badal gaya to colour reset kar do
         colourFilter.innerHTML = '<option value="all">All Colours</option>';
-        colourFilter.disabled = true;
-        updateTable();
-    });
 
-    // Jab Item badle to Colours update hon
-    itemFilter.addEventListener('change', () => {
-        populateColourFilter(brandFilter.value, itemFilter.value);
-        updateTable();
-    });
+        if (selectedItem === 'all') {
+            colourFilter.disabled = true;
+            return;
+        }
 
-    // Baqi filters par sirf table update ho
-    [colourFilter, unitFilter, refundFilter].forEach(f => {
-        if (f) f.addEventListener('change', updateTable);
-    });
-
-    dateFilter.addEventListener('change', () => {
-        toggleDateInputs(dateFilter.value);
-        if (dateFilter.value !== 'custom') updateTable();
-    });
-
-    if (applyBtn) {
-        applyBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            updateTable();
-        });
+        const brandData = dbDefinitions.find(d => d.brandName === selectedBrand);
+        
+        if (brandData && brandData.products) {
+            const selectedProduct = brandData.products.find(p => p.itemName === selectedItem);
+            
+            if (selectedProduct && selectedProduct.colors && Array.isArray(selectedProduct.colors)) {
+                colourFilter.disabled = false;
+                selectedProduct.colors.forEach(c => {
+                    // Using your confirmed keys: 'colour' and 'code'
+                    const cName = c.colour || "Unknown";
+                    const cCode = c.code || "";
+                    
+                    const val = cCode ? `${cName} (Code: ${cCode})` : cName;
+                    const opt = new Option(val, val);
+                    if (isInitial && val === preColor) opt.selected = true;
+                    colourFilter.add(opt);
+                });
+            } else {
+                colourFilter.disabled = true;
+            }
+        }
     }
+
+    // 3. AJAX Table & Stats Update
+    async function updateTable() {
+        const formData = new URLSearchParams(new FormData(filterForm)).toString();
+        const tbody = document.querySelector('tbody');
+        const loader = document.getElementById('table-loader');
+        
+        if(!tbody) return;
+        if(loader) loader.style.display = 'block';
+        tbody.style.opacity = '0.5';
+
+        try {
+            const res = await fetch(`/sales/all?${formData}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                // Update Stats Boxes
+                const statsPs = document.querySelectorAll('.stat-box p');
+                if(statsPs.length >= 5) {
+                    statsPs[0].innerText = data.stats.totalSold;
+                    statsPs[1].innerText = `Rs ${data.stats.totalRevenue.toFixed(2)}`;
+                    statsPs[2].innerText = `Rs ${data.stats.totalProfit.toFixed(2)}`;
+                    statsPs[3].innerText = `Rs ${data.stats.totalLoss.toFixed(2)}`;
+                    statsPs[4].innerText = `Rs ${data.stats.totalRefunded.toFixed(2)}`;
+                }
+
+                // Update Table Rows
+                let html = '';
+                if (data.sales.length === 0) {
+                    html = '<tr><td colspan="12" style="text-align:center; padding:20px;">No records found</td></tr>';
+                } else {
+                   data.sales.forEach(s => {
+    // 🟢 Date and Time formatting to match EJS exactly
+    const dateOptions = { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Karachi' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Karachi' };
+
+    const dateStr = new Date(s.createdAt).toLocaleDateString('en-GB', dateOptions);
+    const timeStr = new Date(s.createdAt).toLocaleTimeString('en-GB', timeOptions);
+
+    html += `<tr>
+        <td>${s.brandName}</td>
+        <td>${s.itemName}</td>
+        <td>${s.colourName}</td>
+        <td>${s.qty}</td>
+        <td>${s.quantitySold}</td>
+        <td>Rs ${s.rate.toFixed(2)}</td>
+        <td>Rs ${(s.quantitySold * s.rate).toFixed(2)}</td>
+        <td class="${s.profit < 0 ? 'loss' : 'profit'}">Rs ${s.profit.toFixed(2)}</td>
+        <td class="refund-status">${s.refundStatus || 'none'}</td>
+        <td class="refund-quantity">${s.refundQuantity || 0}</td>
+        <td>
+            ${dateStr}
+            <br>
+            <small style="color: #007bff; font-weight: bold;">${timeStr}</small>
+        </td>
+        <td><button class="delete-sale delete-btn" data-id="${s._id}" id="delete">Delete</button></td>
+    </tr>`;
+});
+                }
+                tbody.innerHTML = html;
+                attachDelete();
+            }
+        } catch (e) { 
+            console.error("Fetch Error:", e); 
+        } finally { 
+            tbody.style.opacity = '1'; 
+            if(loader) loader.style.display = 'none';
+        }
+    }
+
+    // 4. Event Listeners
+    brandFilter.addEventListener('change', () => { 
+        itemFilter.setAttribute('data-selected', 'all');
+        syncDropdowns(); 
+        updateTable(); 
+    });
+
+    itemFilter.addEventListener('change', () => { 
+        colourFilter.setAttribute('data-selected', 'all');
+        syncColours(); 
+        updateTable(); 
+    });
+
+    [colourFilter, unitFilter, document.getElementById('refundFilter'), document.getElementById('filter')].forEach(el => {
+        if(el) el.addEventListener('change', updateTable);
+    });
+
+   function attachDelete() {
+    document.querySelectorAll('.delete-sale').forEach(btn => {
+        btn.onclick = async () => {
+            // 1. Pehle confirm karein
+            const isConfirmed = confirm("Are you sure you want to delete this sale record?");
+            
+            if (isConfirmed) {
+                try {
+                    const res = await fetch(`/sales/delete-sale/${btn.dataset.id}`, { 
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        // 2. Success Message dikhayein
+                        alert("✅ Sale deleted successfully!"); 
+                        
+                        // 3. Table ko update karein
+                        updateTable();
+                    } else {
+                        // Agar backend se koi error aaye (e.g. Permission issue)
+                        alert("❌ Error: " + (data.message || "Could not delete sale"));
+                    }
+                } catch (err) {
+                    console.error("Delete Error:", err);
+                    alert("❌ Server error! Please try again.");
+                }
+            }
+        };
+    });
+}
+
+    // Initial Run
+    syncDropdowns(true);
+    attachDelete();
 });
