@@ -165,7 +165,7 @@ function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-router.get("/all", isLoggedIn, allowRoles("admin", "worker"), async (req, res) => {
+router.get("/all", isLoggedIn, allowRoles("admin"), async (req, res) => {
     const role = req.user.role;
     try {
         let { filter = 'month', from, to, brand, itemName, colourName, unit, refund } = req.query;
