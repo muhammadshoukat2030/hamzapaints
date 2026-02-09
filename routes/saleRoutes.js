@@ -43,12 +43,14 @@ router.get("/add",isLoggedIn,allowRoles("admin", "worker"), async (req, res) => 
 ================================ */
 router.post("/add", isLoggedIn, allowRoles("admin", "worker"), async (req, res) => {
   try {
-    const { sales, agentID, percentage, customerName } = req.body;
+    const { sales, agentID, percentage, customerName, billID } = req.body;
 
-    if (!customerName || !sales || sales.length === 0) {
-      return res.status(400).json({ success: false, message: "Missing data." });
+    // Validation
+    if (!customerName || !sales || sales.length === 0 || !billID) {
+      return res.status(400).json({ success: false, message: "Customer Name, Bill ID and Sales items are required." });
     }
 
+    // 1. Fetching Products from DB
     const stockIDs = sales.map(s => s.stockID);
     const products = await Product.find({ stockID: { $in: stockIDs } });
     const productMap = new Map(products.map(p => [p.stockID, p]));
@@ -58,12 +60,14 @@ router.post("/add", isLoggedIn, allowRoles("admin", "worker"), async (req, res) 
     const salesToCreate = [];
     const productUpdates = [];
 
+    // 2. Prepare Sales and Stock Updates
     for (const s of sales) {
       const product = productMap.get(s.stockID);
       if (!product || s.quantitySold > product.remaining) {
-        throw new Error(`Stock error for ${s.itemName}`);
+        throw new Error(`Stock error for item: ${s.itemName}. Only ${product ? product.remaining : 0} left.`);
       }
 
+      // Profit Calculation
       const profit = Math.round(((s.rate - product.rate) * s.quantitySold) * 100) / 100;
       
       salesToCreate.push({
@@ -84,32 +88,33 @@ router.post("/add", isLoggedIn, allowRoles("admin", "worker"), async (req, res) 
       totalAmountForAgent += (s.quantitySold * s.rate);
     }
 
-    // 1. Sales & Products Update
+    // 3. Database Execution
     const savedSales = await Sale.insertMany(salesToCreate);
     await Product.bulkWrite(productUpdates);
 
-    // 2. Bill Create karen (Ye hamesha banna chahiye)
+    // 4. Agent Check
     let dbAgent = null;
     if (agentID) {
         dbAgent = await Agent.findOne({ agentID });
     }
 
+    // 5. Create the Bill in PrintSale Model
     const savedBill = await PrintSale.create({
         customerName: customerName,
+        billID: billID, // Frontend se aayi hui Unique ID
         salesItems: savedSales.map(sale => sale._id),
         agentId: dbAgent ? dbAgent._id : null
     });
 
-    // 3. ✅ Bill ID ko hamesha update karen (Agent ho ya na ho)
     const saleIds = savedSales.map(s => s._id);
     
-    // Default update (Sirf Bill ID)
+    // 6. Link Sales back to the Bill
     await Sale.updateMany(
       { _id: { $in: saleIds } },
       { $set: { billId: savedBill._id } }
     );
 
-    // 4. Agent Commission Logic (Sirf agar Agent ho)
+    // 7. Agent Commission logic
     if (dbAgent && percentage > 0) {
       const percentageAmount = Math.round((totalAmountForAgent * percentage / 100) * 100) / 100;
       
@@ -123,7 +128,7 @@ router.post("/add", isLoggedIn, allowRoles("admin", "worker"), async (req, res) 
         paidStatus: "Unpaid"
       });
 
-      // ✅ Agent Item ID bhi update karen unhi sales par
+      // Link Sale to Agent Item
       await Sale.updateMany(
         { _id: { $in: saleIds } },
         { $set: { agentItemId: agentItem._id } }
@@ -133,7 +138,7 @@ router.post("/add", isLoggedIn, allowRoles("admin", "worker"), async (req, res) 
       await dbAgent.save();
     }
 
-    res.json({ success: true, message: "Sale and History Saved!", billId: savedBill._id });
+    res.json({ success: true, message: "Sale processed successfully!", billId: savedBill._id, customBillID: billID });
 
   } catch (err) {
     console.error("❌ Add Sale Error:", err);

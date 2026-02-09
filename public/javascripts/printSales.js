@@ -2,11 +2,13 @@ document.addEventListener("DOMContentLoaded", function () {
       // 1. LocalStorage se data nikaalna
       const savedData = localStorage.getItem("lastAddedSales");
       const customerName = localStorage.getItem("lastCustomerName"); // Name fetch kiya
+      const billID=localStorage.getItem("lastSalesBillID");
       
       const tbody = document.getElementById("billTableBody");
       const totalItemsSpan = document.getElementById("billTotalItems");
       const totalAmountSpan = document.getElementById("billTotalAmount");
       const displayNameSpan = document.getElementById("displayName");
+      const displayBillSpan=document.getElementById("displaybillID");
 
       // 2. Name Display Logic
       if (customerName) {
@@ -15,7 +17,13 @@ document.addEventListener("DOMContentLoaded", function () {
         displayNameSpan.innerText = "...................."; // Agar naam na ho
       }
 
-      if (savedData) {
+     if(billID){
+      displayBillSpan.innerText = billID;
+     }else {
+        displayBillSpan.innerText = "...................."; // Agar naam na ho
+      }
+
+       if (savedData) {
         const sales = JSON.parse(savedData);
         let tableHTML = "";
         let totalAmount = 0;

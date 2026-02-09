@@ -1,15 +1,20 @@
 // ===============================================
-// INITIAL DATA & AGENT LOGIC
+// 1. INITIAL DATA & SIMPLE ID GENERATION
 // ===============================================
+
+// Har baar page load hone par ek fresh Bill ID generate hogi (No LocalStorage)
+const currentBillID = "HP-" + Math.floor(10000 + Math.random() * 90000);
+
 const agentSelect = document.getElementById("agentSelect");
 const agentPercentage = document.getElementById("agentPercentage");
 
+// Agent select hone par percentage field dikhana
 agentSelect.addEventListener("change", function () {
     agentPercentage.style.display = this.value ? "inline-block" : "none";
     if (!this.value) agentPercentage.value = "";
 });
 
-// Deep copy of product data to manage stock on front-end
+// Front-end par stock manage karne ke liye initial data ki copy
 const initialProducts = JSON.parse(document.getElementById("productData").textContent);
 let products = JSON.parse(JSON.stringify(initialProducts));
 let tempSales = [];
@@ -25,7 +30,7 @@ const rate = document.getElementById("rate");
 const totalStock = document.getElementById("totalStock");
 
 // ===============================================
-// DROPDOWN EVENT LISTENERS
+// 2. DROPDOWN EVENT LISTENERS
 // ===============================================
 
 brandSelect.addEventListener("change", function () {
@@ -59,7 +64,7 @@ colourSelect.addEventListener("change", function () {
 });
 
 // ===============================================
-// CORE LOGIC (FRONT-END STOCK MANAGEMENT)
+// 3. DROPDOWN LOGIC (STOCK UPDATER)
 // ===============================================
 
 function updateItemDropdown(brand) {
@@ -128,7 +133,7 @@ function updateOptionDropdown(brand, item, unit, colourName, preFiltered = null)
 }
 
 // ===============================================
-// ADD / DELETE / SUBMIT (FRONT-END UPDATES)
+// 4. ADD & DELETE SALE (FRONT-END TABLE)
 // ===============================================
 
 document.getElementById("add").addEventListener("click", function () {
@@ -149,12 +154,15 @@ document.getElementById("add").addEventListener("click", function () {
         alert(`⚠️ Only ${selectedProduct.remaining} available in stock.`); return;
     }
 
-    // FRONT-END MINUS
+    // Update stock locally
     selectedProduct.remaining -= qtyInput;
+
+    // Unique Sale ID (Zaroori for DB Validation)
+    const uniqueSaleID = `${item.slice(0, 3).toUpperCase()}-${Math.floor(10000 + Math.random() * 90000)}`;
 
     tempSales.push({
         stockID: selectedProduct.stockID,
-        saleID: `${item.slice(0, 3).toUpperCase()}-${Date.now().toString().slice(-6)}`,
+        saleID: uniqueSaleID, 
         brandName: brand,
         itemName: selectedProduct.itemName,
         qty: (selectedProduct.qty && selectedProduct.qty.toUpperCase() !== "N/A") ? selectedProduct.qty : "",
@@ -165,28 +173,8 @@ document.getElementById("add").addEventListener("click", function () {
     });
 
     renderTable();
-    refreshCurrentSelection(); // Refresh dropdowns to show updated stock
+    refreshCurrentSelection();
 });
-
-function refreshCurrentSelection() {
-    const b = brandSelect.value;
-    const i = itemSelect.value;
-    const u = unitSelect.value;
-    const c = allColoursSelect.value;
-
-    // Sirf niche walay dropdown refresh karein taake selection kharab na ho
-    if (u || unitSelect.disabled) {
-        if (c || allColoursSelect.disabled) {
-            updateOptionDropdown(b, i, u, c);
-        } else {
-            updateAllColoursDropdown(b, i, u);
-        }
-    } else {
-        updateUnitColourDropdown(b, i);
-    }
-
-    quantitySold.value = ""; rate.value = ""; totalStock.value = "";
-}
 
 function renderTable() {
     const tbody = document.getElementById("saleTableBody");
@@ -196,10 +184,12 @@ function renderTable() {
     }
     tbody.innerHTML = tempSales.map((p, i) => `
         <tr>
-            <td>${p.brandName}</td><td>${p.itemName}</td><td>${p.colourName}</td>
+            <td>${p.brandName}</td>
+            <td>${p.itemName}</td>
+            <td>${p.colourName}</td>
             <td>${p.qty}</td><td>${p.quantitySold}</td>
             <td>Rs ${p.rate.toFixed(2)}</td><td>Rs ${p.total.toFixed(2)}</td>
-            <td><button id="delete" class="delete-sale" data-index="${i}">Delete</button></td>
+            <td><button type="button" class="delete-sale delete-btn" data-index="${i}" id="delete" >Delete</button></td>
         </tr>
     `).join('');
 
@@ -207,11 +197,8 @@ function renderTable() {
         btn.onclick = function () {
             const idx = this.dataset.index;
             const sale = tempSales[idx];
-
-            // FRONT-END PLUS
             const prod = products.find(p => p.stockID === sale.stockID);
             if (prod) prod.remaining += sale.quantitySold;
-
             tempSales.splice(idx, 1);
             renderTable();
             refreshCurrentSelection();
@@ -219,20 +206,13 @@ function renderTable() {
     });
 }
 
-// Isay dhoondhein aur replace kar dein
 // ===============================================
-// UPDATED SUBMIT LOGIC (Sirf Loader Add Kiya Hai)
+// 5. FINAL SUBMIT (POST TO DATABASE)
 // ===============================================
-// ===============================================
-// UPDATED SUBMIT LOGIC WITH CUSTOMER NAME
-// ===============================================
-// ===============================================
-// UPDATED SUBMIT LOGIC WITH CUSTOMER NAME SAVING
-// ===============================================
+
 document.getElementById("submitBtn").addEventListener("click", async function () {
     const customerName = document.getElementById("customerName").value.trim();
     
-    // Validation
     if (!customerName) {
         alert("⚠️ Please enter Customer Name.");
         document.getElementById("customerName").focus();
@@ -240,14 +220,15 @@ document.getElementById("submitBtn").addEventListener("click", async function ()
     }
     if (tempSales.length === 0) return alert("⚠️ Add at least one sale to the table.");
 
-    const submitBtn = document.getElementById("submitBtn");
+    const submitBtn = this;
     const originalText = submitBtn.innerHTML;
 
     submitBtn.disabled = true;
-    submitBtn.innerHTML = `<span class="spinner"></span> Saving Sales...`;
+    submitBtn.innerHTML = `Saving Sales...`;
 
     const payload = { 
         customerName: customerName,
+        billID: currentBillID, 
         sales: tempSales, 
         agentID: agentSelect.value || null, 
         percentage: parseFloat(agentPercentage.value) || 0 
@@ -264,12 +245,11 @@ document.getElementById("submitBtn").addEventListener("click", async function ()
 
         if (data.success) {
             alert("✅ Sales Saved Successfully!");
-
-            // 🟢 LOCALSTORAGE UPDATES:
-            // 1. Sales items save karein
+            
+            // Print ke liye LocalStorage updates
             localStorage.setItem("lastAddedSales", JSON.stringify(tempSales));
-            // 2. Customer name bhi save karein (Naya add kiya hai)
             localStorage.setItem("lastCustomerName", customerName);
+            localStorage.setItem("lastSalesBillID", payload.billID);
 
             window.open(`/sales/print`, "_blank");
             location.reload(); 
@@ -286,21 +266,28 @@ document.getElementById("submitBtn").addEventListener("click", async function ()
 });
 
 // ===============================================
-// HELPERS (RESETS)
+// 6. HELPERS (RESET FIELDS)
 // ===============================================
+
+function refreshCurrentSelection() {
+    updateOptionDropdown(brandSelect.value, itemSelect.value, unitSelect.value, allColoursSelect.value);
+    quantitySold.value = ""; rate.value = ""; totalStock.value = "";
+}
+
 function resetOptionAndInputs() {
     colourSelect.innerHTML = `<option value="">Select Option</option>`; colourSelect.disabled = true;
     quantitySold.value = ""; rate.value = ""; totalStock.value = "";
 }
+
 function resetUnitColourAndInputs() {
     unitSelect.innerHTML = `<option value="">Select Unit</option>`; unitSelect.disabled = true;
     allColoursSelect.innerHTML = `<option value="">Select Colour</option>`; allColoursSelect.disabled = true;
     resetOptionAndInputs();
 }
+
 function resetFieldsBelowBrand() {
     itemSelect.innerHTML = `<option value="">Select Item</option>`; itemSelect.disabled = true;
     resetUnitColourAndInputs();
 }
 
 renderTable();
-

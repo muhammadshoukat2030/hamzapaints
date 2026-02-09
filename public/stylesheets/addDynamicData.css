@@ -2,8 +2,7 @@
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-sizing: border-box; 
 }
 
 body {
@@ -139,7 +138,13 @@ button[type="button"]#addMoreItemsBtn:hover {
 }
 
 /* ================= COLLAPSIBLE STYLES ================= */
-.section-header { display: flex; align-items: center; cursor: pointer; padding: 10px 0; user-select: none; }
-.toggle-icon { margin-right: 15px; font-size: 12px; transition: transform 0.3s; }
-.collapsed .toggle-icon { transform: rotate(-90deg); }
-.collapsible-content { display: none; margin-top: 15px; }
+
+
+
+ .section-header { display: flex; align-items: center; cursor: pointer; background: #f1f1f1; padding: 10px; border-radius: 4px; margin-top: 15px; user-select: none; border: 1px solid #ddd; }
+    .toggle-icon { margin-right: 15px; font-size: 12px; transition: transform 0.3s ease; font-weight: bold; }
+    .collapsed .toggle-icon { transform: rotate(-90deg); }
+    .collapsible-content { padding: 15px; border: 1px solid #ddd; border-top: none; display: none; }
+    .item-entry { background: #fafafa; padding: 10px; border: 1px dashed #ccc; margin-bottom: 10px; border-radius: 4px; position: relative; }
+    .remove-btn { color: red; cursor: pointer; font-weight: bold; border: none; background: none; }
+    #addMoreItemsBtn { background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-top: 5px; }
