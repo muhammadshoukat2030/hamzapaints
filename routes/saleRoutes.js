@@ -150,8 +150,6 @@ router.post("/add", isLoggedIn, allowRoles("admin", "worker"), async (req, res) 
 
 
 
-
-
 /* ================================
    🟢 3️⃣ All Sales Page (GET)
    ✅ Includes Total Stats
@@ -262,9 +260,6 @@ router.get("/all", isLoggedIn, allowRoles("admin"), async (req, res) => {
         res.status(500).send("Server Error");
     }
 });
-
-
-
 
 
 
