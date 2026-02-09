@@ -15,6 +15,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const unitFilter = document.getElementById('unitFilter');
     const filterSelect = document.getElementById('filter');
     const filterForm = document.getElementById('filterForm');
+    const tableContainer = document.getElementById('tableContainer');
+    const fromInput = document.getElementById('from');
+    const toInput = document.getElementById('to');
+    const applyBtn = document.getElementById('apply');
+
+    // ===================== CUSTOM FILTER TOGGLE =========================
+
+    function toggleCustomDates() {
+        if (filterSelect.value === 'custom') {
+            fromInput.style.display = 'inline-block';
+            toInput.style.display = 'inline-block';
+            applyBtn.style.display = 'inline-block';
+        } else {
+            fromInput.style.display = 'none';
+            toInput.style.display = 'none';
+            applyBtn.style.display = 'none';
+        }
+    }
 
     // ===================== DYNAMIC POPULATE FUNCTIONS =========================
 
@@ -76,7 +94,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const tbody = document.querySelector('tbody');
         const loader = document.getElementById('table-loader');
         
-        if (loader) loader.style.display = 'flex';
+        if (loader) {
+            loader.style.display = 'flex';
+            loader.style.flexDirection = 'column';
+            loader.style.alignItems = 'center';
+            loader.style.justifyContent = 'center';
+            
+            // Center absolute positioning
+            loader.style.position = 'absolute';
+            loader.style.top = '50%';
+            loader.style.left = '50%';
+            loader.style.transform = 'translate(-50%, -50%)';
+            loader.style.zIndex = '100';
+        }
+
+        if (tableContainer) {
+            tableContainer.style.position = 'relative';
+            tableContainer.classList.add('loading-active');
+        }
+
         tbody.style.opacity = '0.3';
 
         try {
@@ -101,47 +137,47 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.products.length === 0) {
                     html = `<tr><td colspan="13" class="no-data">No products found.</td></tr>`;
                 } else {
-    data.products.forEach(p => {
-        // Date and Time formatting (Pure JavaScript)
-        const dateObj = new Date(p.createdAt);
-        const formattedDate = dateObj.toLocaleDateString('en-GB', { 
-            day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Karachi' 
-        });
-        const formattedTime = dateObj.toLocaleTimeString('en-GB', { 
-            hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Karachi' 
-        });
+                    data.products.forEach(p => {
+                        const dateObj = new Date(p.createdAt);
+                        const formattedDate = dateObj.toLocaleDateString('en-GB', { 
+                            day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Karachi' 
+                        });
+                        const formattedTime = dateObj.toLocaleTimeString('en-GB', { 
+                            hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Karachi' 
+                        });
 
-        // Color Logic for Remaining Stock
-        const remainingColor = Number(p.remaining) <= 0 ? '#d9534f' : '#28a745';
+                        const remainingColor = Number(p.remaining) <= 0 ? '#d9534f' : '#28a745';
 
-        html += `
-        <tr>
-            <td><strong>${p.stockID}</strong></td>
-            <td>${p.brandName}</td>
-            <td>${p.itemName}</td>
-            <td>${p.colourName}</td>
-            <td>${p.qty}</td>
-            <td>${p.totalProduct}</td>
-            <td style="color: ${remainingColor}; font-weight: bold;">${p.remaining}</td>
-            <td>Rs ${p.rate}</td>
-            <td>Rs ${(p.totalProduct * p.rate).toFixed(2)}</td>
-            <td class="refund-status">${p.refundStatus || 'none'}</td>
-            <td class="refund-quantity">${p.refundQuantity || 0}</td>
-            <td>
-                ${formattedDate}
-                <br>
-                <small style="color: #007bff; font-weight: bold;">${formattedTime}</small>
-            </td>
-            ${data.role === "admin" ? `<td><button class="delete-btn" data-id="${p._id}" id="delete" >Delete</button></td>` : ''}
-        </tr>`;
-    });
-}
-tbody.innerHTML = html;
-attachDeleteEvents();
-}
-        } catch (err) { console.error("Error:", err); }
-        finally {
+                        html += `
+                        <tr>
+                            <td><strong>${p.stockID}</strong></td>
+                            <td>${p.brandName}</td>
+                            <td>${p.itemName}</td>
+                            <td>${p.colourName}</td>
+                            <td>${p.qty}</td>
+                            <td>${p.totalProduct}</td>
+                            <td style="color: ${remainingColor}; font-weight: bold;">${p.remaining}</td>
+                            <td>Rs ${p.rate}</td>
+                            <td>Rs ${(p.totalProduct * p.rate).toFixed(2)}</td>
+                            <td class="refund-status">${p.refundStatus || 'none'}</td>
+                            <td class="refund-quantity">${p.refundQuantity || 0}</td>
+                            <td>
+                                ${formattedDate}
+                                <br>
+                                <small style="color: #007bff; font-weight: bold;">${formattedTime}</small>
+                            </td>
+                            ${data.role === "admin" ? `<td><button class="delete-btn" data-id="${p._id}" id="delete" >Delete</button></td>` : ''}
+                        </tr>`;
+                    });
+                }
+                tbody.innerHTML = html;
+                attachDeleteEvents();
+            }
+        } catch (err) { 
+            console.error("Error:", err); 
+        } finally {
             if (loader) loader.style.display = 'none';
+            if (tableContainer) tableContainer.classList.remove('loading-active');
             tbody.style.opacity = '1';
         }
     }
@@ -162,22 +198,44 @@ attachDeleteEvents();
         updateTable();
     });
 
-    [unitFilter, colourFilter, document.getElementById('stockStatusFilter'), document.getElementById('refundFilter'), filterSelect].forEach(f => {
+    [unitFilter, colourFilter, document.getElementById('stockStatusFilter'), document.getElementById('refundFilter')].forEach(f => {
         if (f) f.addEventListener('change', updateTable);
+    });
+
+    filterSelect.addEventListener('change', () => {
+        toggleCustomDates();
+        if (filterSelect.value !== 'custom') {
+            updateTable();
+        }
+    });
+
+    applyBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        updateTable();
     });
 
     function attachDeleteEvents() {
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.onclick = async function() {
-                if (!confirm("Delete this product?")) return;
-                const res = await fetch(`/products/delete-product/${this.dataset.id}`, { method: "DELETE" });
-                const data = await res.json();
-                if (data.success) { alert(data.message); updateTable(); }
+                if (!confirm("⚠️ Are you sure you want to delete this product?")) return;
+                try {
+                    const res = await fetch(`/products/delete-product/${this.dataset.id}`, { method: "DELETE" });
+                    const data = await res.json();
+                    if (data.success) { 
+                        alert("✅ Product deleted successfully!"); 
+                        updateTable(); 
+                    } else {
+                        alert("❌ Error: " + data.message);
+                    }
+                } catch (err) {
+                    alert("❌ Server error while deleting.");
+                }
             };
         });
     }
 
     // Initial Load
+    toggleCustomDates();
     populateItemFilter(window.selectedBrand);
     populateUnitFilter(window.selectedBrand);
     populateColourFilter(window.selectedBrand, window.selectedItem);

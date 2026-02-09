@@ -82,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 ${pkrDate} <br> 
                                 <small style="color: #007bff; font-weight: bold;">${pkrTime}</small>
                             </td>
+                            <td class="customer-name">${bill.billID}</td>
                             <td class="customer-name">${bill.customerName}</td>
                             <td>${bill.salesItems.length} Items</td>
                             <td style="font-weight: bold; color: #06A56C;">Rs ${billTotal.toFixed(2)}</td>

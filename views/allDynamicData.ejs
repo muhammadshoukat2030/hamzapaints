@@ -3,68 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <title>All Items | Hamza Paints</title>
-    <link rel="stylesheet" href="/stylesheets/addProduct.css"> <style>
-        .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
-        .data-table th, .data-table td { padding: 12px; border: 1px solid #eee; text-align: left; }
+    <style>
+
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border: 1px solid #ddd; }
+        .data-table th, .data-table td { padding: 12px;  text-align: left; }
         .data-table th { background-color: #06a56c; color: white; }
         .brand-row { background-color: #f9f9f9; font-weight: bold; color: #06a56c; }
         .tag { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 2px 8px; border-radius: 4px; margin: 2px; font-size: 12px; border: 1px solid #a5d6a7; }
         .unit-tag { background: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
+        .del-brand, .del-prod, .del-color { cursor: pointer; color: #ff5252; margin-left: 5px; font-weight: bold; border: none; background: none; padding: 0; }
+        .del-btn-main {
+  background-color: #ffebee;
+  /* Light red background */
+  color: #d32f2f;
+  /* Dark red text */
+  border: 1px solid #ef9a9a;
+  /* Soft red border */
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  /* Mobile ke hisab se chota text */
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hover effect for better UX */
+.del-btn-main:hover {
+  background-color: #d32f2f;
+  color: white;
+  border-color: #b71c1c;
+}
+        
+        .no-data { text-align: center; padding: 40px; color: #999; font-style: italic; }
     </style>
+    <link rel="stylesheet" href="/stylesheets/allsales.css">
 </head>
 <body>
     <%- include('partials/navbar') %>
     <main>
         <div class="create-item-container">
-            <h2>All Data</h2>
-            
-            <% if (allDefinitions.length > 0) { %>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Brand & Units</th>
-                            <th>Item Name</th>
-                            <th>Colors & Codes</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% allDefinitions.reverse().forEach(brand => { %>
-                            <tr class="brand-row">
+            <h2 style="color: #06A56C;" >All Data</h2>
+         
+            <select name="brand" id="brandFilter" style="padding: 8px; border-radius: 5px; margin-bottom: 10px;">
+                <option value="all">All Brands</option>
+                <% allDefinitions.forEach(brand => { %>
+                    <option value="<%= brand.brandName.trim() %>"><%= brand.brandName %></option>
+                <% }) %>
+            </select>
+
+            <table class="data-table" id="itemsTable">
+                <thead>
+                    <tr>
+                        <th>Brand Details</th>
+                        <th>Item Name</th>
+                        <th>Colors</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (allDefinitions && allDefinitions.length > 0) { %>
+                        <% allDefinitions.forEach(brand => { %>
+                            <tr class="brand-row" data-brand="<%= brand.brandName.trim() %>">
                                 <td colspan="4">
-                                    BRAND: <%= brand.brandName %> 
+                                    <span style="color: red;">BRAND: <%= brand.brandName %></span>
+                                    
+                                    <button class="del-brand" data-brand-id="<%= brand._id %>" title="Delete Brand">🗑️</button>
+                                    
                                     <span style="margin-left:20px; font-weight:normal; color:#666;">
-                                        Units: <% brand.units.forEach(u => { %>
-                                            <span class="tag unit-tag"><%= u %></span>
-                                        <% }) %>
+                                        Units: <% brand.units.forEach(u => { %> <span class="tag unit-tag"><%= u %></span> <% }) %>
                                     </span>
                                 </td>
                             </tr>
-                            
                             <% brand.products.forEach(product => { %>
-                                <tr>
-                                    <td></td> <td><strong><%= product.itemName %></strong></td>
+                                <tr class="product-row" data-brand="<%= brand.brandName.trim() %>">
+                                    <td></td> 
                                     <td>
-                                        <% if(product.hasColors && product.colors.length > 0) { %>
-                                            <% product.colors.forEach(c => { %>
-                                                <span class="tag"><%= c.colour %> (<%=  c.code %>)</span>
-                                            <% }) %>
-                                        <% } else { %>
-                                            <span style="color: #ccc;">No Colors</span>
-                                        <% } %>
+                                        <strong><%= product.itemName %></strong>
+                                        <button class="del-prod" data-brand-id="<%= brand._id %>" data-prod-id="<%= product._id %>" style="border:none; background:none; cursor:pointer;"></button>
                                     </td>
                                     <td>
-                                        <button class="tag" style="background:#ffebee; color:#c62828; border-color:#ffcdd2; cursor:pointer;">Delete</button>
+                                        <% product.colors.forEach(c => { %>
+                                            <span class="tag">
+                                                <%= c.colour %> (<%= c.code %>)
+                                                <b class="del-color" 
+                                                   data-brand-id="<%= brand._id %>" 
+                                                   data-prod-id="<%= product._id %>" 
+                                                   data-color-id="<%= c._id %>" >×</b>
+                                            </span>
+                                        <% }) %>
+                                    </td>
+                                    <td>
+                                        <button class="del-btn-main del-prod" 
+                                                data-brand-id="<%= brand._id %>" 
+                                                data-prod-id="<%= product._id %>">Delete Item</button>
                                     </td>
                                 </tr>
                             <% }) %>
                         <% }) %>
-                    </tbody>
-                </table>
-            <% } else { %>
-                <p>No data found. <a href="/dynamic/add">Start adding data</a></p>
-            <% } %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="4" class="no-data" style="text-align: center;" >Maafi! Koi data nahi mila (No Data Found).</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
         </div>
     </main>
+    <script src="/javascripts/allDynamicData.js"></script>  
 </body>
 </html>

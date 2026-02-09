@@ -61,19 +61,19 @@
       </div>
       <div class="stat-box">
         <h3>📈 Total Sales</h3>
-        <p>Rs <%= stats.totalRevenue ? stats.totalRevenue.toFixed(2) : '0.00' %></p>
+        <p>Rs <%= stats.totalRevenue ? stats.totalRevenue.toLocaleString() : '0.00' %></p>
       </div>
       <div class="stat-box">
         <h3>💰 Total Profit</h3>
-        <p id="total-profit">Rs <%= stats.totalProfit ? stats.totalProfit.toFixed(2) : '0.00' %></p>
+        <p id="total-profit">Rs <%= stats.totalProfit ? stats.totalProfit.toLocaleString() : '0.00' %></p>
       </div>
       <div class="stat-box">
         <h3>📉 Total Loss</h3>
-        <p id="total-loss">Rs <%= stats.totalLoss ? stats.totalLoss.toFixed(2) : '0.00' %></p>
+        <p id="total-loss">Rs <%= stats.totalLoss ? stats.totalLoss.toLocaleString() : '0.00' %></p>
       </div>
       <div class="stat-box">
         <h3>↩️ Refund Sales</h3>
-        <p id="refund-sales">Rs <%= stats.totalRefunded ? stats.totalRefunded.toFixed(2) : '0.00' %></p>
+        <p id="refund-sales">Rs <%= stats.totalRefunded ? stats.totalRefunded.toLocaleString() : '0.00' %></p>
       </div>
     </div>
 

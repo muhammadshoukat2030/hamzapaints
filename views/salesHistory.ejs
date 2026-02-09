@@ -56,6 +56,7 @@
                 <thead>
                     <tr>
                         <th>Date & Time</th>
+                        <th>Bill ID</th>
                         <th>Customer Name</th>
                         <th>Items Count</th>
                         <th>Total Bill</th>
@@ -87,6 +88,7 @@
                         <%= pkrTime %>
                     </small>
                 </td>
+                <td class="customer-name"><%= bill.billID %></td>
                 <td class="customer-name"><%= bill.customerName %></td>
                 <td><%= bill.salesItems.length %> Items</td>
                 <td style="font-weight: bold; color: #06A56C;">Rs <%= billTotal.toFixed(2) %></td>

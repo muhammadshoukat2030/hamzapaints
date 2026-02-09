@@ -93,43 +93,72 @@ router.post('/add-item', isLoggedIn, allowRoles("admin", "worker"), async (req, 
 
 
 
-// 4. ALL DATA VIEW
+// 3. ALL DATA VIEW
 router.get('/all', isLoggedIn, allowRoles("admin", "worker"), async (req, res) => {
     try {
         const role = req.user.role;
         const allDefinitions = await ItemDefinition.find().sort({ brandName: 1 });
         res.render('allDynamicData', { role, allDefinitions });
     } catch (err) {
-        console.error(err);
         res.status(500).send("Server Error");
     }
 });
 
 
-
-// 5. DELETE FULL BRAND
-router.get('/delete-brand/:id', isLoggedIn, allowRoles("admin"), async (req, res) => {
+// 4. DELETE BRAND
+router.post('/delete-brand', isLoggedIn, allowRoles("admin", "worker"), async (req, res) => {
     try {
-        await ItemDefinition.findByIdAndDelete(req.params.id);
-        res.redirect('/dynamic/all');
-    } catch (err) {
-        res.status(500).send("Error deleting brand");
+        const brand = await ItemDefinition.findByIdAndDelete(req.body.brandId);
+        if (!brand) {
+            return res.status(404).json({ success: false, message: "Brand nahi mila!" });
+        }
+        res.json({ success: true, message: "Poora Brand aur uske products delete ho gaye!" });
+    } catch (err) { 
+        res.status(500).json({ success: false, message: "Brand delete karne mein masla hua." }); 
+    }
+});
+
+// 5. DELETE PRODUCT
+router.post('/delete-product', isLoggedIn, allowRoles("admin","worker"), async (req, res) => {
+    try {
+        const { brandId, productId } = req.body;
+        const result = await ItemDefinition.findByIdAndUpdate(
+            brandId, 
+            { $pull: { products: { _id: productId } } },
+            { new: true }
+        );
+        if (!result) {
+            return res.status(404).json({ success: false, message: "Item ya Brand nahi mila!" });
+        }
+        res.json({ success: true, message: "Item kamyabi se nikal diya gaya!" });
+    } catch (err) { 
+        res.status(500).json({ success: false, message: "Item delete nahi ho saka." }); 
+    }
+});
+
+// 6. DELETE COLOR
+router.post('/delete-color', isLoggedIn, allowRoles("admin", "worker"), async (req, res) => {
+    try {
+        const { brandId, productId, colorId } = req.body;
+        const result = await ItemDefinition.findOneAndUpdate(
+            { _id: brandId, "products._id": productId },
+            { $pull: { "products.$.colors": { _id: colorId } } },
+            { new: true }
+        );
+        if (!result) {
+            return res.status(404).json({ success: false, message: "Color delete karne ke liye data nahi mila!" });
+        }
+        res.json({ success: true, message: "Color list se saaf kar diya gaya!" });
+    } catch (err) { 
+        res.status(500).json({ success: false, message: "Color delete karne mein error aya." }); 
     }
 });
 
 
 
-// 6. DELETE SPECIFIC PRODUCT FROM BRAND
-router.get('/delete-product/:brandId/:productId', isLoggedIn, allowRoles("admin"), async (req, res) => {
-    try {
-        await ItemDefinition.findByIdAndUpdate(req.params.brandId, {
-            $pull: { products: { _id: req.params.productId } }
-        });
-        res.redirect('/dynamic/all');
-    } catch (err) {
-        res.status(500).send("Error deleting product");
-    }
-});
+
+
+
 
 
 

@@ -14,6 +14,10 @@ const printSaleSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Agent',
         default: null
+    },
+    billID:{
+        type:String,
+        require:true,
     }
 }, { timestamps: true });
 

@@ -39,6 +39,8 @@
       
     </div>
     
+    <p><b>Bill ID:  </b><b><%= bill.billID %></b></p>
+    <br>
     <p><b>Customer name:  </b><b><%= bill.customerName %></b></p>
     <br>
     <p><b>Entry date: <%= new Date(bill.createdAt).toLocaleDateString('en-GB', {timeZone: 'Asia/Karachi'}) %> | 
