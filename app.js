@@ -71,7 +71,7 @@ app.use(
 const allowedOrigins = process.env.NODE_ENV === "production"
   ? ["https://hamzapaints.vercel.app"]   // Add your production domain(s) here
   : ["http://localhost:3000"];           // Localhost for dev
-
+-
 // ===== CORS Middleware =====
 app.use(cors({
   origin: function (origin, callback) {
